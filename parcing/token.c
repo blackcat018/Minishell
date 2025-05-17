@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:07:10 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/06 20:35:41 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/17 16:25:08 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,18 @@ we reach the end of it ! ad whatecer is in between we treat it as a token (scrip
 the tokenizer returns a linked list or a simple array that we then pass to the parcer!
 */
 
-t_token *create_token(e_token type, char *value)
-{
-    t_token *new_token;
-
-    new_token = malloc(sizeof(t_token));
-    if(!new_token)
-        return(NULL);
-    new_token->value = ft_strdup(value);
-    new_token->type = type;
-    new_token->next = NULL;
-    return(new_token);
-}
-
 
 // |
-void is_it_pipe(t_token **head, t_token **tail, int *i)
+void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;
-
-    new = create_token(PIPE, "|");
+    if(input[*i] == '|' && input[*i+1] == '|' )
+    {
+        new = create_token(AND, "||");
+        *i += 1;
+    } 
+    else
+        new = create_token(PIPE, "|");
     if (!new)
         return;
     if (!*head)
@@ -48,6 +40,29 @@ void is_it_pipe(t_token **head, t_token **tail, int *i)
         (*tail)->next = new;
     *tail = new;
     (*i)++;
+}
+
+void is_it_and(t_token **head, t_token **tail, int *i, char *input)
+{
+    t_token *new;
+    if(input[*i] == '&' && input[*i+1] == '&' )
+    {
+        new = create_token(AND, "&&");
+        *i += 1;
+    }
+    if (!new)
+        return;
+    if (!*head)
+        *head = new;
+    else
+        (*tail)->next = new;
+    *tail = new;
+    (*i)++;
+}
+
+int is_token_breaker(char c) {
+    return (c == ' ' || c == '|' || c == '\'' || c == '"' ||
+            c == '<' || c == '>' || c == ';' || c == '`');
 }
 
 void is_it_word(t_token **head, t_token **tail, int *i, char *input)
@@ -59,12 +74,7 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     len = 0;
     j = 0;
     start = *i;
-    while (input[*i] 
-         && input[*i] != ' ' 
-         && input[*i] != '|'
-         && input[*i] != '\''
-         && input[*i] != '<'
-         && input[*i] != '>')
+    while (input[*i] && !is_token_breaker(input[*i]))
     {
         (*i)++;
         len++;
@@ -78,7 +88,10 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
         j++;
     }
     tmp[len] = '\0';
-    new = create_token(WORD, tmp);
+    if(input[start] == '-')
+        new = create_token(CMD_ARG, tmp);
+    else
+        new = create_token(COMMAND, tmp);
     free(tmp);
     if (!new)
         return;
@@ -97,18 +110,18 @@ void is_it_op(t_token **head, t_token **tail, int *i, char *input)
     
     if(input[*i] == '<' && input[*i+1] == '<' )
     {
-        new = create_token(OPS, "<<");
+        new = create_token(HERE_DOC, "<<");
         *i += 1;
     }  
     else if(input[*i] == '>' && input[*i+1] == '>')
     {
-        new = create_token(OPS, ">>");
+        new = create_token(APPEND, ">>");
         *i += 1;
     }
     else if(input[*i] == '>')
-        new = create_token(OPS, ">");
+        new = create_token(REDIR_OUT, ">");
     else if(input[*i] == '<')
-        new = create_token(OPS, "<");
+        new = create_token(REDIR_IN, "<");
     if (!new)
         exit(1);
     if (!*head)
@@ -130,11 +143,23 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
     j = 0;
     (*i)++;
     start = *i;
-    while(input[*i] != c && input[(*i)])
-        (*i)++;
+    if (c == '"') {
+        while (input[*i]) {
+            if (input[*i] == '\\' && input[*i + 1])
+                (*i) += 2;
+            else if (input[*i] == c)
+                break;
+            else
+                (*i)++;
+        }
+    } else {
+        while (input[*i] && input[*i] != c) {
+            (*i)++;
+        }
+    }    
     if(input[*i] != c)
     {
-        ft_putstr_fd("minishell: unclosed quote\n",2);
+        ft_putstr_fd("minishell: unclosed quote\n",2);   ///////handel error
         exit(1);
     }
     tmp = malloc(sizeof(char) * ((*i) - start + 1));
@@ -146,7 +171,7 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
         j++;
     }
     tmp[j] = '\0';
-    new = create_token(QUOTED_STRING, tmp);
+    new = create_token(QUOTES, tmp);
     if (!new)
         return;
     if (!*head)
@@ -157,8 +182,5 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
     (*i)++;
     free(tmp);
 }
-
-
-
 
 

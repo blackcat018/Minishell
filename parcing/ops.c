@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 18:42:34 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/06 13:55:12 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/13 21:52:00 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ void inorder(t_trs *root) {
     printf("%s ->", root->value);
     inorder(root->right);
   }
-  
-  // Preorder
+  /*
+    // Preorder
   void preorder(t_trs *root) {
     if (root == NULL) return;
     printf("%s ->", root->value);
@@ -38,7 +38,7 @@ void inorder(t_trs *root) {
   // Create a new Node
   t_trs* createNode(char *value) {
     t_trs *newNode = malloc(sizeof(t_trs));
-    newNode->value = strdup(value);
+    newNode->value = ft_strdup(value);
     newNode->left = NULL;
     newNode->right = NULL;
   
@@ -57,3 +57,4 @@ void inorder(t_trs *root) {
     return root->right;
   }
   
+  */

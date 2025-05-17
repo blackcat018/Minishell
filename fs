@@ -1,0 +1,10 @@
+Makefile
+README.md
+fs
+includes.h
+main.c
+main.o
+minishell
+parcing
+pipex
+utils

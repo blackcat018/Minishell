@@ -5,7 +5,7 @@ LDFLAGS = -lreadline -lncurses
 CFLAGS = -Wall -Wextra -Werror
 
 # Main files
-files = parcing/ops parcing/parcer parcing/token main \
+files = parcing/ops parcing/parcer parcing/token main parcing/tokenizer parcing/variables utils/helper_funcs/helps\
 
 CFILES = $(files:%=%.c)
 OBJS = $(files:%=%.o)
