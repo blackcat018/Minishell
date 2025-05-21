@@ -3,107 +3,122 @@
 /*                                                        :::      ::::::::   */
 /*   parcer.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/06 14:00:54 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/17 16:15:14 by codespace        ###   ########.fr       */
+/*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
+/*   Updated: 2025/05/19 16:27:59 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
 
-// binary parsing!!
 
-// t_trs *parse_cmd(t_token **tokens)
-// {
-//     t_trs *cmd_node;
-//     if (!tokens || !*tokens)
-//         return NULL;
-//     cmd_node = create_node(NULL);
-//     cmd_node->type = COMMAND;
-//     while(*tokens && !is_operator(*tokens))
-//     {
-//         add_arg(cmd_node, (*tokens)->value);
-//         *tokens = (*tokens)->next;
-//     }
-//     return(cmd_node);
-// }
+int is_token_cmd(t_token *T)
+{
+    return (T->type == COMMAND || 
+			T->type == CMD_ARG ||
+            T->type == SINGL_QU || 
+			T->type == BUILT_IN || 
+			T->type == DOUBLE_QU ||
+			T->type == QUOTED_VAR ||
+			T->type == VAR);
+}
 
-// t_trs *parse_redirection(t_trs *left, t_token **tokens)
-// {
-//     t_trs *right_node;
-//     t_trs *redir;
+int is_token_redirect(t_token *R)
+{
+	return(R->type == REDIR_IN || 
+		   R->type == REDIR_OUT ||
+		   R->type == APPEND ||
+		   R->type == HERE_DOC);
+}
+int arg_count(t_token *token, NodeType i)
+{
+	int j;
 
-//     if(!tokens || !*tokens)
-//         exit(1);
-//     if(!left)
-//         left = parse_cmd(tokens);
-//     while(*tokens && (*tokens)->type == REDIRECT)
-//     {
-//         redir = create_node((*tokens)->value);
-//         redir->type = REDIRECT;
-//         *tokens = (*tokens)->next;
-//         if(*tokens && (*tokens)->type == COMMAND)
-//         {
-//             right_node = create_node((*tokens)->value);
-//             right_node->type = COMMAND;
-//             *tokens = (*tokens)->next;
-//             redir->left = left;
-//             redir->right = right_node;
-//             left = redir;
-//         }
-//     }
-//     return(left);
-// }
+	j = 0;
+	while(token && token->type != i)
+	{
+		j++;
+		token = token->next;
+	}
+		
+	return(j);
+}
+int redir_counter(t_token *token, NodeType i)
+{
+	int j;
 
-// t_trs *parse_pipe(t_token **tokens)
-// {
-//     t_trs *left;
-//     t_trs *right;
-//     t_trs *pipe_node;
+	j = 0;
+	while(token && token->type != i)
+	{
+		if(is_token_redirect(token))
+			j++;
+		token = token->next;
+	}
+		
+	return(j);
+}
+t_cmd *store_cmds(t_token *token)
+{
+	t_cmd *cmd;
+	int i = 0;
+	int j = 0;
+	int redir_count = redir_counter(token,PIPE);
 
-//     left = parse_cmd(tokens);
-//     left = parse_redirection(left,tokens);
-//     while(*tokens && (*tokens)->type == PIPE)
-//     {
-//         *tokens = (*tokens)->next;
-//         right = parse_cmd(tokens);
-//         right = parse_redirection(right,tokens);
-//         pipe_node = create_node("|");
-//         pipe_node->type = PIPE;
-//         pipe_node->right = right;
-//         pipe_node->left = left;
-//         left = pipe_node;
-//     }
-//     return(left);
-// }
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+		return NULL;
 
-// t_trs *parse_logical(t_token **tokens)
-// {
-//     t_trs *left;
-//     t_trs *right;
-//     t_trs *logical_node;
+	cmd->argv = malloc(sizeof(char*) * (arg_count(token, PIPE) + 1));
+	cmd->redirect = malloc(sizeof(char*) * (redir_count + 1));
+	cmd->file = malloc(sizeof(char*) * (redir_count + 1));
+	if (!cmd->argv || !cmd->redirect || !cmd->file)
+		return NULL;
 
-//     left = parse_pipe(tokens);
-    
-//     while(*tokens && ((*tokens)->type == AND || (*tokens)->type == OR))
-//     {
-//         logical_node = create_node((*tokens)->value);
-//         if ((*tokens)->type == AND)
-// 	        logical_node->type = AND;
-//         else
-// 	        logical_node->type = OR;
-//         *tokens = (*tokens)->next;
-//         right = parse_pipe(tokens);
-//         logical_node->left = left;
-//         logical_node->right = right;
-//         left = logical_node;
-//     }
-    
-//     return left;
-// }
+	while (token && token->type != PIPE)
+	{
+		if (is_token_cmd(token))
+			cmd->argv[i++] = ft_strdup(token->value);
 
+		else if (is_token_redirect(token))
+		{
+			cmd->redirect[j] = ft_strdup(token->value);
+			token = token->next;
+			if (token)
+				cmd->file[j] = ft_strdup(token->value);
+			j++;
+		}
+		token = token->next;
+	}
 
+	cmd->argv[i] = NULL;
+	cmd->redirect[j] = NULL;
+	cmd->file[j] = NULL;
+	cmd->next = NULL;
+	return cmd;
+}
 
-// linked list parsing
+t_cmd *build_cmd_list(t_token *token)
+{
+	t_cmd *head;
+	t_cmd *tail;
+	t_cmd *cmd;
 
+	head = NULL;
+	cmd = NULL;
+	tail = NULL;
+	while(token)
+	{
+		cmd = store_cmds(token);
+		if(!head)
+			head = cmd;
+		else
+			tail->next = cmd;
+		tail = cmd;
+		while(token && token->type != PIPE)
+			token = token->next;
+		if(token && token->type == PIPE)
+			token = token->next;
+	}
+	return(head);
+}

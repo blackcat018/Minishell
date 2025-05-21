@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/06 13:41:01 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/17 16:00:23 by codespace        ###   ########.fr       */
+/*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
+/*   Updated: 2025/05/19 19:07:49 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,45 @@
 void print_tokens(t_token *tokens)
 {
     while (tokens) {
-        printf("Token: %s       and its type is: %d \n", tokens->value, tokens->type);
+		// int j = is_it_singled(tokens);
+		// if(j == 1)
+		// 	printf(GREEN "it has single quotes \n" RESET);
+		// else if(j == 0)
+		// 	printf(WHITE "does not have single quotes \n" RESET);
+        printf("Token is: %s\nType is: %d \nQuote flag is : %d\n\n", tokens->value, tokens->type, tokens->quote_flag);
         tokens = tokens->next;
     }
 }
+void print_parse(t_cmd *cmd)
+{
+	while (cmd)
+	{
+		int i = 0;
+
+		// Print command arguments
+		while (cmd->argv && cmd->argv[i])
+		{
+			printf(RED "(commands) argv[%d]: %s\n" RESET, i, cmd->argv[i]);
+			i++;
+		}
+
+		// Print redirects and corresponding files
+		if (cmd->redirect && cmd->file)
+		{
+			i = 0;
+			while (cmd->redirect[i] && cmd->file[i])
+			{
+				printf(YELLOW "Redirect[%d]: %s\n" RESET, i, cmd->redirect[i]);
+				printf(SKYBLUE "File[%d]: %s\n" RESET, i, cmd->file[i]);
+				i++;
+			}
+		}
+
+		printf("----\n");
+		cmd = cmd->next;
+	}
+}
+
 
 void clear_tokens(t_token **head)
 {
@@ -32,20 +67,43 @@ void clear_tokens(t_token **head)
         free(tmp); 
     }
 }
+void clear_cmd(t_cmd **head)
+{
+    t_cmd *tmp;
+	int i;
+    while (*head)
+    {
+		i = 0;
+        tmp = *head;
+        *head = (*head)->next;
+		if(tmp->argv){        
+			while(tmp->argv[i])
+				free(tmp->argv[i++]);
+			free(tmp->argv);
+		}
+		free(tmp->file);
+		free(tmp->redirect);
+        free(tmp); 
+    }
+}
 
-int main(void)
+int main(int ac, char ** av, char **env)
 {
     char *input;
     t_token *head = NULL;
     t_token *tail = NULL;
     t_token *output = NULL;
+	t_token *expand = NULL;
+	t_cmd *cmd = NULL;
     
+	(void)ac;
+	(void)av;
+	// (void)env;
     while (1)
     {
         head = NULL;
         tail = NULL;
-        input = readline("\033[1;32mminishell > \033[0m");
-
+        input = readline("\033[1;96m minishell > \033[0m");
         if (!input)
         {
             printf("exit\n");
@@ -56,8 +114,13 @@ int main(void)
             add_history(input);
         tail = NULL;
        output = tokenizer(&head,&tail,input);
-       print_tokens(output);
-       clear_tokens(&output);
+	   expand = expand_variables(output,env);
+	   cmd = build_cmd_list(expand);
+	   print_parse(cmd);
+		// print_tokens(expand);
+		clear_tokens(&output );
+		clear_tokens(&expand);
+	//    clear_cmd(&cmd);
        free(input);
     }
     return 0;

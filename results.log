@@ -1,6 +1,0 @@
-./pipex/Bonus/pipex_bonus.c:70:int	main_norm(int ac, t_vabs *pipex, char *first_arg, char *last_arg)
-./pipex/Bonus/pipex_bonus.c:95:int	main(int ac, char **av, char **env)
-./pipex/Bonus/pipex_bonus.c:104:	if (main_norm(ac, &pipex, av[1], av[ac - 1]) == 1)
-./pipex/pipex.c:114:int	main(int ac, char **av, char **env)
-./main.c:4:/*   main.c                                             :+:      :+:    :+:   */
-./main.c:36:int main(void)

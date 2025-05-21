@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/06 14:07:10 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/17 16:25:08 by codespace        ###   ########.fr       */
+/*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
+/*   Updated: 2025/05/19 17:00:24 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
 void is_it_and(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;
+	new = NULL;
     if(input[*i] == '&' && input[*i+1] == '&' )
     {
         new = create_token(AND, "&&");
@@ -61,8 +62,20 @@ void is_it_and(t_token **head, t_token **tail, int *i, char *input)
 }
 
 int is_token_breaker(char c) {
-    return (c == ' ' || c == '|' || c == '\'' || c == '"' ||
-            c == '<' || c == '>' || c == ';' || c == '`');
+    return (c == ' ' || c == '|'||
+            c == '<' || c == '>');
+}
+void flag_check(char start, char end, t_token *token, int type)
+{
+	if (type == SINGL_QU || type == DOUBLE_QU)
+	{
+		if(start == end)
+			token->quote_flag = 0;
+		else if (start != end)
+			token->quote_flag = 1;
+		else 
+		token->quote_flag = 0;
+	}
 }
 
 void is_it_word(t_token **head, t_token **tail, int *i, char *input)
@@ -90,8 +103,13 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     tmp[len] = '\0';
     if(input[start] == '-')
         new = create_token(CMD_ARG, tmp);
+	else if (input[start] == '"')
+		new = create_token(DOUBLE_QU, tmp);
+	else if (input[start] == '\'')
+		new = create_token(SINGL_QU, tmp);
     else
         new = create_token(COMMAND, tmp);
+	flag_check(input[start], tmp[len - 1],new,new->type);
     free(tmp);
     if (!new)
         return;
@@ -108,6 +126,7 @@ void is_it_op(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;
     
+	new = NULL;
     if(input[*i] == '<' && input[*i+1] == '<' )
     {
         new = create_token(HERE_DOC, "<<");
@@ -132,7 +151,7 @@ void is_it_op(t_token **head, t_token **tail, int *i, char *input)
     (*i)++;
 }
 
-//""   ''
+// ""   ''
 void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
 {
     t_token *new;
@@ -142,12 +161,12 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
 
     j = 0;
     (*i)++;
-    start = *i;
-    if (c == '"') {
-        while (input[*i]) {
-            if (input[*i] == '\\' && input[*i + 1])
-                (*i) += 2;
-            else if (input[*i] == c)
+    start = *i - 1;
+    if (c == '"')
+	{
+        while (input[*i])
+		{
+            if (input[*i] == c)
                 break;
             else
                 (*i)++;
@@ -159,9 +178,10 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
     }    
     if(input[*i] != c)
     {
-        ft_putstr_fd("minishell: unclosed quote\n",2);   ///////handel error
+        ft_putstr_fd("minishell: unclosed quote\n",2);
         exit(1);
     }
+	(*i)++;
     tmp = malloc(sizeof(char) * ((*i) - start + 1));
     if(!tmp)
         return;
@@ -171,7 +191,10 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
         j++;
     }
     tmp[j] = '\0';
-    new = create_token(QUOTES, tmp);
+	if(c == '"')
+		new = create_token(DOUBLE_QU, tmp);
+    else 
+		new = create_token(SINGL_QU, tmp);
     if (!new)
         return;
     if (!*head)
@@ -179,7 +202,6 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
     else
         (*tail)->next = new;
     *tail = new;
-    (*i)++;
     free(tmp);
 }
 

@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ops.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/05 18:42:34 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/13 21:52:00 by codespace        ###   ########.fr       */
+/*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
+/*   Updated: 2025/05/21 01:02:57 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
 
-void inorder(t_trs *root) {
-    if (root == NULL) return;
-    inorder(root->left);
-    printf("%s ->", root->value);
-    inorder(root->right);
-  }
+// void inorder(t_trs *root) {
+//     if (root == NULL) return;
+//     inorder(root->left);
+//     printf("%s ->", root->value);
+//     inorder(root->right);
+//   }
   /*
     // Preorder
   void preorder(t_trs *root) {
