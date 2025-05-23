@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:12:17 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 17:35:41 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/23 22:48:41 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int check_quotes(char *str)
 				len--;
 			}
 		}
-		if(str[i] == '"')
+		else if(str[i] == '"')
 		{
 			while(back[len])
 			{

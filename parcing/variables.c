@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 19:43:10 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/23 23:29:04 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,67 +41,68 @@ int is_it_var(char *str)
 		return (0);
 }
 
-int is_it_singled(t_token *dollar)
-{
-	int (i),(j);
-	i = 0;
-	j = 0;
-
-	if(dollar->type == SINGL_QU)
-	{
-		if(dollar->quote_flag == 1)
-			(printf(REDD "Minishell: unclosed quotes!" RESET),exit(1));
-		return(1);
-	}
-	if(dollar->type == DOUBLE_QU)
-		return(0);
-	while(dollar->value[i])
-	{
-		if(dollar->value[i] == '\'' && dollar->value[i+1] == '$')
-		{
-			j = i;
-			while(dollar->value[j])
-			{
-				if(dollar->value[j] == '\'')
-					return(1);
-				j++;
-			}
-			if(dollar->value[j] == '\0')
-				(printf(REDD "Minishell: unclosed quotes!" RESET),exit(1));
-		}
-		i++;
-	}
-	return(0);
+int check_unclosed_quotes(t_token *token) {
+    if (token->quote_flag == 1) {
+        printf(REDD "Minishell: unclosed quotes!" RESET "\n");
+        exit(1);
+    }
+    return 0;
 }
-int is_it_doubled(t_token *dollar)
-{
-	int (i),(j);
-	i = 0;
-	j = 0;
 
-	if(dollar->type == DOUBLE_QU)
-	{
-		if(dollar->quote_flag == 1)
-			(printf(REDD "Minishell: unclosed quotes!" RESET),exit(1));
-		return(1);
-	}
-	while(dollar->value[i])
-	{
-		if(dollar->value[i] == '"' && dollar->value[i+1] == '$')
-		{
-			j = i;
-			while(dollar->value[j])
-			{
-				if(dollar->value[j] == '"')
-					return(1);
-				j++;
-			}
-			if(dollar->value[j] == '\0')
-				(printf(REDD "Minishell: unclosed quotes!" RESET),exit(1));
-		}
-		i++;
-	}
-	return(0);
+int is_it_singled(t_token *token)
+{
+    int in_single = 0;
+    int in_double = 0;
+    int i = 0;
+
+    if (token->type == SINGL_QU) {
+        return !check_unclosed_quotes(token);
+    }
+    if (token->type == DOUBLE_QU) {
+        return 0;
+    }
+
+    while (token->value[i]) {
+        if (token->value[i] == '\'' && !in_double) {
+            in_single = !in_single;
+        }
+        else if (token->value[i] == '"' && !in_single) {
+            in_double = !in_double;
+        }
+        else if (token->value[i] == '$' && in_single) {
+            return 1;
+        }
+        i++;
+    }
+    return 0;
+}
+
+int is_it_doubled(t_token *token)
+{
+    int in_single = 0;
+    int in_double = 0;
+    int i = 0;
+
+    if (token->type == DOUBLE_QU) {
+        return !check_unclosed_quotes(token);
+    }
+    if (token->type == SINGL_QU) {
+        return 0;
+    }
+
+    while (token->value[i]) {
+        if (token->value[i] == '"' && !in_single) {
+            in_double = !in_double;
+        }
+        else if (token->value[i] == '\'' && !in_double) {
+            in_single = !in_single;
+        }
+        else if (token->value[i] == '$' && in_double) {
+            return 1;
+        }
+        i++;
+    }
+    return 0;
 }
 
 char *strip_token(char *value)
@@ -182,61 +183,64 @@ char *get_env_value(char *name, char **env)
 	return ft_strdup("");
 }
 
-char *replace_in_quotes(char *str, char **env)
-{
-	char *result;
-	char *val;
-	char *var;
+char *replace_in_quotes(char *str, char **env) {
+    char *result = malloc(4096);
+    if (!result) return NULL;
 
-	int (i),(j),(k),(start);
-	j = 0;
-	i = 0;
-	result = malloc(4096);
-	if (!result)
-		return NULL;
-	while (str[i])
-	{
-		if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_'))
-		{
-			start = ++i;
-			while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
-				i++;
-			var = ft_substr(str, start, i - start);
-			val = get_env_value(var, env);
-			k = 0;
-			while (val && val[k])
-				result[j++] = val[k++];
-			(free(var), free(val));
-		}
-		else
-			result[j++] = str[i++];
-	}
-	result[j] = '\0';
-	return (ft_strdup(result));
+    int i = 0, j = 0;
+    int in_single = 0;
+    int in_double = 0;
+    char *val = NULL;
+    char *var = NULL;
+
+    while (str[i]) {
+        if (str[i] == '\'' && !in_double) {
+            in_single = !in_single;
+            result[j++] = str[i++];
+            continue;
+        }
+        if (str[i] == '"' && !in_single) {
+            in_double = !in_double;
+            result[j++] = str[i++];
+            continue;
+        }
+        if (str[i] == '$' && (!in_single || in_double) && str[i+1] && 
+            (ft_isalnum(str[i+1]) || str[i+1] == '_')) {
+            int start = ++i;
+            while (str[i] && (ft_isalnum(str[i]) || str[i] == '_')) i++;
+            
+            var = ft_substr(str, start, i - start);
+            val = get_env_value(var, env);
+            
+            int k = 0;
+            while (val && val[k]) result[j++] = val[k++];
+
+            free(var);
+            free(val);
+            var = NULL;
+            val = NULL;
+        } else {
+            result[j++] = str[i++];
+        }
+    }
+    result[j] = '\0';
+    return result;
 }
-
 
 char *handle_double(t_token *token, char **env)
 {
-	char *tmp;
-	char *var_val;
-	char **res;
-
-	int (i), (j);
-	i = 0;
-	j = 0;
-	res = NULL;
-	if(check_quotes(token->value) == 3)
-	{
-		printf(REDD"minishell : unclosed quotes!\n"RESET);
-		exit(1);
-	}
-	tmp = strip_token(token->value);
-	check_quotes(tmp);
-	if(!tmp)
-		return(NULL);
-	var_val = replace_in_quotes(tmp,env);
-	return(var_val);
+    char *stripped;
+    char *var_val;
+    
+    if(check_quotes(token->value) == 3)
+    {
+        printf(REDD"minishell : unclosed quotes!\n"RESET);
+        return NULL;
+    }
+    var_val = replace_in_quotes(token->value, env);
+	stripped = strip_token(var_val);
+    free(var_val);  // Don't forget to free stripped token
+    return stripped;
 }
 
 char *replace_in_arg(char *str, char **env)
@@ -331,11 +335,17 @@ t_token *expand_variables(t_token *tokens, char **envp)
 		if(is_it_var(tokens->value) == 1)
 		{
 			if(is_it_singled(tokens))
-				new = create_token(tokens->type, ft_strdup(tokens->value));
-			else if (is_it_doubled(tokens))
+			{
+				res = handle_double(tokens,envp);
+				new = create_token(QUOTED_VAR,res);
+				error_checks(prev,tokens,new->value,flag);
+			}
+				
+			else if (check_quotes(tokens->value) == 2)
 			{
 				flag = 1;
 				res = handle_double(tokens,envp);
+				printf("\n====%s====\n",res);
 				new = create_token(QUOTED_VAR,res);
 				error_checks(prev,tokens,new->value,flag);
 			}
