@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/21 02:44:43 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/23 00:29:54 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,22 @@ void quoted_check(char *str)
 		i++;
 	}
 }
+int quoted_mid_token(char *str)
+{
+	int i;
+	int flag;
 
+	i = 0;
+	flag = 0;
+	while(str[i])
+	{
+		if(str[i] == '\'')
+		{
+			
+		}
+		i++;
+	}
+}
 char *var_name(char *str)
 {
     int i;
@@ -174,25 +189,15 @@ char *var_name(char *str)
 
 char *get_env_value(char *name, char **env)
 {
+	int i = 0;
+	int len = ft_strlen(name);
 
-	char **split;
-	char *value;
-
-	int (i),(len);
-	i = 0;
-	len = ft_strlen(name);
 	while (env[i])
 	{
 		if (ft_strncmp(env[i], name, len) == 0 && env[i][len] == '=')
 		{
-			split = ft_split(env[i], '=');//fix! you should start after the first '=' not split the thing
-			if (split && split[1])
-			{
-				value = ft_strdup(split[1]);
-				free_split(split);
-				return value;
-			}
-			free_split(split);
+			char *value_start = env[i] + len + 1;
+			return ft_strdup(value_start);
 		}
 		i++;
 	}
@@ -320,21 +325,12 @@ int red_flag(t_token *token)
 void error_checks(t_token *prev, t_token *token,char *expanded, int flag)
 {
 		if(prev && red_flag(prev) && flag == 1)
-		{
 			print_file_error(expanded);
-			exit(g_exit_status);
-		}
 		if(prev && red_flag(prev) && !is_it_doubled(token) &&
 		is_ambiguous_redirect(expanded))
-		{
 			print_ambiguous_redirect(var_name(token->value));
-			exit(g_exit_status);
-		}
-		if(prev && red_flag(prev) && !is_it_doubled(token))
-		{
+		if(prev && red_flag(prev) && flag == 0)
 			print_file_error(expanded);;
-			exit(g_exit_status);
-		}
 }
 
 t_token *expand_variables(t_token *tokens, char **envp)

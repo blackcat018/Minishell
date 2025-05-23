@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/19 16:27:59 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/22 02:50:37 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ t_cmd *store_cmds(t_token *token)
 	return cmd;
 }
 
-t_cmd *build_cmd_list(t_token *token)
+t_cmd *build_cmd_list(t_token *token) //parser is done! good job asshole!
 {
 	t_cmd *head;
 	t_cmd *tail;

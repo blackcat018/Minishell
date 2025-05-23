@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/19 19:07:49 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/22 22:52:02 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ int main(int ac, char ** av, char **env)
     t_token *tail = NULL;
     t_token *output = NULL;
 	t_token *expand = NULL;
+	t_token *wild = NULL;
 	t_cmd *cmd = NULL;
     
 	(void)ac;
@@ -115,7 +116,8 @@ int main(int ac, char ** av, char **env)
         tail = NULL;
        output = tokenizer(&head,&tail,input);
 	   expand = expand_variables(output,env);
-	   cmd = build_cmd_list(expand);
+	   wild = handel_wild_card(expand); //read about the open_dir and whatever the fuck this shit needs to be done!
+	   cmd = build_cmd_list(wild);
 	   print_parse(cmd);
 		// print_tokens(expand);
 		clear_tokens(&output );
