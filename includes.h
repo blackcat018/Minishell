@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#define REDD     "\033[0;105m"
+#define REDD     "\033[0;101m"
 #define WHITE     "\033[0;7m"
 #define GREEN	"\033[0;42m"
 #define RED     "\033[0;95m"
@@ -67,9 +67,10 @@ typedef struct s_cmd
 }t_cmd;
 
 int red_flag(t_token *token);
+void free_token_list(t_token *token);
 int is_ambiguous_redirect(char *expanded);
 t_token *handel_wild_card(t_token *xpnd);
-
+int check_quotes(char *str);
 // void err_handle(t_token *xpnd, char **envp); tf were you thinking!
 
 void	print_system_error(char *context);
@@ -78,6 +79,7 @@ void	print_syntax_error(char *token);
 void	print_file_error(char *filename);
 void	print_ambiguous_redirect(char *var_name);
 void	print_cmd_not_found(char *cmd);
+t_token *expanding_it(t_token *token, char **env);
 
 void append_list(t_token **head, t_token *new_node);
 

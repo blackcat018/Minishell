@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 00:29:54 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/23 19:43:10 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,65 +106,45 @@ int is_it_doubled(t_token *dollar)
 
 char *strip_token(char *value)
 {
-	int i;
-	char *tmp;
+    int i = 0;
+    int j = 0;
+    char *tmp;
+    int quote_pos = -1;
 
-	tmp = malloc(sizeof(char) * (ft_strlen(value)));
-	if(!tmp)
-		return(NULL);
-	i = 1;
-	while (value[i] != '"')
-	{
-		tmp[i - 1] = value[i];
-		i++;
-	}
-	tmp[i - 1] = '\0';
-	return(tmp);
+    while (value[i] != '\0')
+    {
+        if (value[i] == '"')
+        {
+            quote_pos = i;
+            break;
+        }
+        i++;
+    }
+    if (quote_pos == -1)
+    {
+        tmp = strdup(value);
+        return tmp;
+    }
+    tmp = malloc(sizeof(char) * (ft_strlen(value)));
+    if (!tmp)
+        return NULL;
+    i = 0;
+    while (value[i] != '\0')
+    {
+        if (value[i] != '"')
+            tmp[j++] = value[i];
+        i++;
+    }
+    tmp[j] = '\0';
+    return tmp;
 }
-void quoted_check(char *str)
-{
-	int i = 0, j = 0;
-	char tmp;
 
-	while (str[i])
-	{
-		if (str[i] == '\'' || str[i] == '"')
-		{
-			tmp = str[i];
-			j = i + 1;
-			while (str[j] && str[j] != tmp)
-				j++;
-			if (str[j] == '\0')
-				(printf(REDD "Minishell: unclosed quotes!" RESET), exit(1));
-			i = j;
-		}
-		i++;
-	}
-}
-int quoted_mid_token(char *str)
-{
-	int i;
-	int flag;
-
-	i = 0;
-	flag = 0;
-	while(str[i])
-	{
-		if(str[i] == '\'')
-		{
-			
-		}
-		i++;
-	}
-}
 char *var_name(char *str)
 {
-    int i;
-	int j;
-    int start;
     char *dollar;
     char *tmp;
 
+	int (i), (j), (start);
 	j = 0;
     tmp = ft_strchr(str, '$');
     if (!tmp)
@@ -181,9 +161,7 @@ char *var_name(char *str)
 		dollar[j] = tmp[start + j];
 		j++;
 	}
-
     dollar[i] = '\0';
-    
     return dollar;
 }
 
@@ -248,11 +226,15 @@ char *handle_double(t_token *token, char **env)
 	i = 0;
 	j = 0;
 	res = NULL;
-	quoted_check(token->value);
+	if(check_quotes(token->value) == 3)
+	{
+		printf(REDD"minishell : unclosed quotes!\n"RESET);
+		exit(1);
+	}
 	tmp = strip_token(token->value);
+	check_quotes(tmp);
 	if(!tmp)
 		return(NULL);
-	quoted_check(tmp);
 	var_val = replace_in_quotes(tmp,env);
 	return(var_val);
 }
@@ -370,6 +352,56 @@ t_token *expand_variables(t_token *tokens, char **envp)
 		append_list(&result, new);
 		prev = tokens;
 		tokens = tokens->next;
+	}
+	return(result);
+}
+
+t_token *expanding_it(t_token *token, char **env)
+{
+	t_token *xpnd;
+	t_token *result;
+	t_token *new;
+	char **tmp;
+	int i;
+
+	result = NULL;
+	new = NULL;
+	tmp = NULL;
+	xpnd = expand_variables(token, env);
+	while(xpnd)
+	{
+		if(xpnd->type == VAR && ft_strchr(xpnd->value, ' '))
+		{
+			 i = 0;
+			tmp = ft_split(xpnd->value, ' ');
+			if(!tmp)
+				return(NULL);
+			while(tmp[i])
+			{
+				new = create_token(VAR, tmp[i]);
+				if (!new)
+				{
+                    free_token_list(result);
+                    while (tmp[i]) free(tmp[i++]);
+                    free(tmp);
+                    return NULL;
+                }
+				append_list(&result, new);
+				i++;
+			}
+			free(tmp);
+		}
+		else
+		{
+            new = create_token(xpnd->type, ft_strdup(xpnd->value));
+            if (!new)
+			{
+                free_token_list(result);
+                return NULL;
+            }
+            append_list(&result, new);
+        }
+		xpnd = xpnd->next;
 	}
 	return(result);
 }

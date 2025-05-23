@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/21 17:36:41 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:50:14 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,29 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     len = 0;
     j = 0;
     start = *i;
-    while (input[*i] && !is_token_breaker(input[*i]))
-    {
-        (*i)++;
-        len++;
-    }
+	int in_quote = 0;
+	char quote_type = 0;
+	while (input[*i])
+	{
+		if (!in_quote && is_token_breaker(input[*i]))
+			break;
+
+		if ((input[*i] == '"' || input[*i] == '\''))
+		{
+			if (!in_quote)
+			{
+				in_quote = 1;
+				quote_type = input[*i];
+			}
+			else if (quote_type == input[*i])
+			{
+				in_quote = 0;
+			}
+	}
+
+	(*i)++;
+	len++;
+	}
     tmp = malloc(sizeof(char) * (len + 1));
     if (!tmp)
         return;
@@ -152,57 +170,57 @@ void is_it_op(t_token **head, t_token **tail, int *i, char *input)
 }
 
 // ""   ''
-void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
-{
-    t_token *new;
-    char *tmp;
-    int start;
-    int j;
+// void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
+// {
+//     t_token *new;
+//     char *tmp;
+//     int start;
+//     int j;
 
-    j = 0;
-    (*i)++;
-    start = *i - 1;
-    if (c == '"')
-	{
-        while (input[*i])
-		{
-            if (input[*i] == c)
-                break;
-            else
-                (*i)++;
-        }
-    } else {
-        while (input[*i] && input[*i] != c) {
-            (*i)++;
-        }
-    }    
-    if(input[*i] != c)
-    {
-        ft_putstr_fd("minishell: unclosed quote\n",2);
-        exit(1);
-    }
-	(*i)++;
-    tmp = malloc(sizeof(char) * ((*i) - start + 1));
-    if(!tmp)
-        return;
-    while(j < *i - start)
-    {
-        tmp[j] = input[start +j];
-        j++;
-    }
-    tmp[j] = '\0';
-	if(c == '"')
-		new = create_token(DOUBLE_QU, tmp);
-    else 
-		new = create_token(SINGL_QU, tmp);
-    if (!new)
-        return;
-    if (!*head)
-    *head = new;
-    else
-        (*tail)->next = new;
-    *tail = new;
-    free(tmp);
-}
+//     j = 0;
+//     (*i)++;
+//     start = *i - 1;
+//     if (c == '"')
+// 	{
+//         while (input[*i])
+// 		{
+//             if (input[*i] == c)
+//                 break;
+//             else
+//                 (*i)++;
+//         }
+//     } else {
+//         while (input[*i] && input[*i] != c) {
+//             (*i)++;
+//         }
+//     }    
+//     if(input[*i] != c)
+//     {
+//         ft_putstr_fd("minishell: unclosed quote\n",2);
+//         exit(1);
+//     }
+// 	(*i)++;
+//     tmp = malloc(sizeof(char) * ((*i) - start + 1));
+//     if(!tmp)
+//         return;
+//     while(j < *i - start)
+//     {
+//         tmp[j] = input[start +j];
+//         j++;
+//     }
+//     tmp[j] = '\0';
+// 	if(c == '"')
+// 		new = create_token(DOUBLE_QU, tmp);
+//     else 
+// 		new = create_token(SINGL_QU, tmp);
+//     if (!new)
+//         return;
+//     if (!*head)
+//     *head = new;
+//     else
+//         (*tail)->next = new;
+//     *tail = new;
+//     free(tmp);
+// }
 
 

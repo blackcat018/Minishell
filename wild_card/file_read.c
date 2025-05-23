@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:14:55 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 02:26:37 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/23 20:03:50 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,13 @@ void free_token_list(t_token *token)
 	free(token);
 }
 
-int match_pattern(const char *pattern, const char *str)
+int match_pattern(char *pattern, char *str)
 {
-    const char *star = NULL;
-    const char *str_ptr = str;
+    char *star;
+    char *str_ptr;
 
+	str_ptr = str;
+	star = NULL;
     while (*str_ptr)
 	{
         if (*pattern == '*')
@@ -56,7 +58,7 @@ int match_pattern(const char *pattern, const char *str)
     return *pattern == '\0';
 }
 
-int matched_count(const char *token)
+int matched_count(char *token)
 {
     DIR *dir;
     struct dirent *entry;
@@ -75,7 +77,7 @@ int matched_count(const char *token)
     return count;
 }
 
-char **expand_wildcard(const char *token)
+char **expand_wildcard(char *token)
 {
     DIR *dir;
     struct dirent *entry;
