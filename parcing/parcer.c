@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/22 02:50:37 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/24 23:51:12 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ int is_token_cmd(t_token *T)
     return (T->type == COMMAND || 
 			T->type == CMD_ARG ||
             T->type == SINGL_QU || 
-			T->type == BUILT_IN || 
 			T->type == DOUBLE_QU ||
 			T->type == QUOTED_VAR ||
 			T->type == VAR);

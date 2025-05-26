@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 18:50:14 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/25 18:38:22 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,30 +27,11 @@ void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
     t_token *new;
     if(input[*i] == '|' && input[*i+1] == '|' )
     {
-        new = create_token(AND, "||");
+        new = create_token(OR, "||");
         *i += 1;
     } 
     else
         new = create_token(PIPE, "|");
-    if (!new)
-        return;
-    if (!*head)
-        *head = new;
-    else
-        (*tail)->next = new;
-    *tail = new;
-    (*i)++;
-}
-
-void is_it_and(t_token **head, t_token **tail, int *i, char *input)
-{
-    t_token *new;
-	new = NULL;
-    if(input[*i] == '&' && input[*i+1] == '&' )
-    {
-        new = create_token(AND, "&&");
-        *i += 1;
-    }
     if (!new)
         return;
     if (!*head)

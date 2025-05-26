@@ -25,13 +25,11 @@ int g_exit_status;
 typedef enum {
     COMMAND,// done.          0
     CMD_ARG,//done            1
-    BUILT_IN,//               2
-
+	OR,
+	AND,
 	SINGL_QU,//               4
 	DOUBLE_QU,//			  5
-    PIPE,//done               6
-    AND,//done?               7
-    OR,//done                 8
+    PIPE,//done               6               8
     REDIR_IN,//done           9
     REDIR_OUT,//done          10
     APPEND,//done             11
@@ -86,6 +84,7 @@ void append_list(t_token **head, t_token *new_node);
 char *strip_token(char *value);
 
 int is_it_doubled(t_token *dollar);
+t_token *stripper(t_token *xpnd);
 
 t_token *create_token(NodeType type, char *value);
 void clear_tokens(t_token **head);
@@ -106,6 +105,6 @@ void is_it_pipe(t_token **head, t_token **tail, int *i,char *input);
 void is_it_op(t_token **head, t_token **tail, int *i, char *input);
 void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c);
 void is_it_word(t_token **head, t_token **tail, int *i, char *input);
-void is_it_and(t_token **head, t_token **tail, int *i, char *input);
+// void is_it_and(t_token **head, t_token **tail, int *i, char *input);
 
 #endif

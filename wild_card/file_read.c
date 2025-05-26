@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:14:55 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 20:03:50 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/25 16:24:21 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,29 @@ int matched_count(char *token)
     closedir(dir);
     return count;
 }
+int no_matches(char *token)
+{
+	DIR *dir;
+	int count;
+    struct dirent *entry;
+
+	dir = opendir(".");
+    if (!dir)
+        return (0);
+	count = 0;	
+	while ((entry = readdir(dir)) != NULL)
+	{
+        if (entry->d_name[0] == '.' && token[0] != '.')
+            continue;
+        
+        if (match_pattern(token, entry->d_name))
+		{
+            count++;
+        }
+    }
+	closedir(dir);
+	return(count);
+}
 
 char **expand_wildcard(char *token)
 {
@@ -87,12 +110,16 @@ char **expand_wildcard(char *token)
     matches = malloc((total + 1) * sizeof(char *));
     if (!matches) return NULL;
 
+	if(no_matches(token) == 0)
+	{
+		matches = ft_split(token,'\0');
+		return(matches);
+	}
     dir = opendir(".");
     if (!dir) {
         free(matches);
         return NULL;
     }
-
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_name[0] == '.' && token[0] != '.')
             continue;
@@ -112,6 +139,7 @@ char **expand_wildcard(char *token)
     matches[count] = NULL;
     return matches;
 }
+
 t_token *handel_wild_card(t_token *xpnd)
 {
     t_token *result = NULL;
@@ -122,26 +150,27 @@ t_token *handel_wild_card(t_token *xpnd)
     while (xpnd) {
         if (ft_strchr(xpnd->value, '*'))
 		{
-            res = expand_wildcard(xpnd->value);
+			res = expand_wildcard(xpnd->value);
             if (!res)
 			{
                 free_token_list(result);
                 return NULL;
             }
 			i = 0;
-            while (res[i])
+			
+			while (res[i])
 			{
-                new = create_token(xpnd->type, res[i]);
-                if (!new)
+				new = create_token(xpnd->type, res[i]);
+				if (!new)
 				{
-                    free_token_list(result);
-                    while (res[i]) free(res[i++]);
-                    free(res);
-                    return NULL;
-                }
-                append_list(&result, new);
+					free_token_list(result);
+					while (res[i]) free(res[i++]);
+					free(res);
+					return NULL;
+				}
+				append_list(&result, new);
 				i++;
-            }
+			}
             free(res);
         } 
         else

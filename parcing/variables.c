@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/23 23:29:04 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:09:10 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,12 @@ int is_it_var(char *str)
 		return (0);
 }
 
-int check_unclosed_quotes(t_token *token) {
-    if (token->quote_flag == 1) {
-        printf(REDD "Minishell: unclosed quotes!" RESET "\n");
-        exit(1);
-    }
-    return 0;
-}
-
 int is_it_singled(t_token *token)
 {
     int in_single = 0;
     int in_double = 0;
     int i = 0;
 
-    if (token->type == SINGL_QU) {
-        return !check_unclosed_quotes(token);
-    }
     if (token->type == DOUBLE_QU) {
         return 0;
     }
@@ -83,9 +72,6 @@ int is_it_doubled(t_token *token)
     int in_double = 0;
     int i = 0;
 
-    if (token->type == DOUBLE_QU) {
-        return !check_unclosed_quotes(token);
-    }
     if (token->type == SINGL_QU) {
         return 0;
     }

@@ -8,7 +8,7 @@ CFLAGS = -Wall -Wextra -Werror
 files = error_checks/err_handle error_checks/error_msg\
 		parcing/ops parcing/parcer parcing/token main\
 		parcing/tokenizer parcing/variables\
-		utils/helper_funcs/helps\
+		utils/helper_funcs/helps quotes/quote_stripping\
 		wild_card/file_read utils/utils\
 
 CFILES = $(files:%=%.c)
