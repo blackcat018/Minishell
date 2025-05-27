@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:14:55 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/25 16:24:21 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/05/26 22:57:52 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int no_matches(char *token)
 	return(count);
 }
 
-char **expand_wildcard(char *token)
+char **expand_wildcard(char *token , NodeType type)
 {
     DIR *dir;
     struct dirent *entry;
@@ -110,7 +110,7 @@ char **expand_wildcard(char *token)
     matches = malloc((total + 1) * sizeof(char *));
     if (!matches) return NULL;
 
-	if(no_matches(token) == 0)
+	if(no_matches(token) == 0 || type == QUOTED_VAR)
 	{
 		matches = ft_split(token,'\0');
 		return(matches);
@@ -150,7 +150,7 @@ t_token *handel_wild_card(t_token *xpnd)
     while (xpnd) {
         if (ft_strchr(xpnd->value, '*'))
 		{
-			res = expand_wildcard(xpnd->value);
+			res = expand_wildcard(xpnd->value ,xpnd->type);
             if (!res)
 			{
                 free_token_list(result);
