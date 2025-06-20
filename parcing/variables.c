@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/24 16:09:10 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/19 17:04:44 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,6 +325,7 @@ t_token *expand_variables(t_token *tokens, char **envp)
 				res = handle_double(tokens,envp);
 				new = create_token(QUOTED_VAR,res);
 				error_checks(prev,tokens,new->value,flag);
+				free(res);
 			}
 				
 			else if (check_quotes(tokens->value) == 2)
@@ -334,6 +335,7 @@ t_token *expand_variables(t_token *tokens, char **envp)
 				printf("\n====%s====\n",res);
 				new = create_token(QUOTED_VAR,res);
 				error_checks(prev,tokens,new->value,flag);
+				free(res);
 			}
 			else
 			{
@@ -341,6 +343,7 @@ t_token *expand_variables(t_token *tokens, char **envp)
 				res = expand(tokens,envp);
 				new = create_token(VAR,res);
 				error_checks(prev,tokens,new->value,flag);
+				free(res);
 			}
 		}
 		else
@@ -378,8 +381,7 @@ t_token *expanding_it(t_token *token, char **env)
 				if (!new)
 				{
                     free_token_list(result);
-                    while (tmp[i]) free(tmp[i++]);
-                    free(tmp);
+					free_split(tmp);
                     return NULL;
                 }
 				append_list(&result, new);

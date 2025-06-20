@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/26 20:42:43 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/19 17:13:23 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,10 @@ void clear_cmd(t_cmd **head)
         free(tmp); 
     }
 }
-
+void ff()
+{
+	system("leaks minishell");
+}
 int main(int ac, char ** av, char **env)
 {
     char *input;
@@ -98,6 +101,7 @@ int main(int ac, char ** av, char **env)
 	t_token *strip = NULL;
 	t_cmd *cmd = NULL;
     
+	atexit(ff);
 	(void)ac;
 	(void)av;
 	// (void)env;
@@ -115,16 +119,18 @@ int main(int ac, char ** av, char **env)
         if (*input)
             add_history(input);
         tail = NULL;
-       output = tokenizer(&head,&tail,input);
-	   expand = expanding_it(output,env);
-	   wild = handel_wild_card(expand); //read about the open_dir and whatever the fuck this shit needs to be done!
-	   strip = stripper(wild);
-	   cmd = build_cmd_list(strip);
-	   print_parse(cmd);
+		output = tokenizer(&head,&tail,input);
+		expand = expanding_it(output,env);
+		wild = handel_wild_card(expand);
+		strip = stripper(wild);
+		cmd = build_cmd_list(strip);
+		print_parse(cmd);
 		// print_tokens(output);
-		clear_tokens(&output );
+		clear_tokens(&output);
 		clear_tokens(&expand);
-	//    clear_cmd(&cmd);
+		clear_tokens(&wild);
+		clear_tokens(&strip);
+		clear_cmd(&cmd);
        free(input);
     }
     return 0;

@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/17 17:46:35 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/19 20:13:41 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*ft_strndup(const char *str, size_t n)
 	size_t	i;
 	size_t	len;
 	char	*dup;
-    
+
 	len = ft_strlen(str);
 	if (n < len)
 		len = n;
@@ -34,59 +34,59 @@ char	*ft_strndup(const char *str, size_t n)
 	return (dup);
 }
 
-t_token *create_token(NodeType type, char *value)
+t_token	*create_token(NodeType type, char *value)
 {
-    t_token *new_token;
+	t_token	*new_token;
 
-    new_token = malloc(sizeof(t_token));
-    if(!new_token)
-        return(NULL);
-    new_token->value = ft_strdup(value);
-    new_token->type = type;
-    new_token->next = NULL;
-    return(new_token);
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	new_token->value = ft_strdup(value);
+	new_token->type = type;
+	new_token->next = NULL;
+	return (new_token);
 }
-t_trs *create_node(char *value)
+t_trs	*create_node(char *value)
 {
-    t_trs   *new_node;
+	t_trs	*new_node;
 
-    new_node = malloc(sizeof(t_trs));
-     if(!new_node)
-        return(NULL);
-    new_node->value = ft_strdup(value);
-    new_node->right = NULL;
-    new_node->left = NULL;
-    return(new_node);
-}
-
-int is_operator(t_token *node)
-{
-    return(node->type == PIPE);
+	new_node = malloc(sizeof(t_trs));
+	if (!new_node)
+		return (NULL);
+	new_node->value = ft_strdup(value);
+	new_node->right = NULL;
+	new_node->left = NULL;
+	return (new_node);
 }
 
-void add_arg(t_trs *node, char *value)
+int	is_operator(t_token *node)
 {
-    char    **new_arg;
+	return (node->type == PIPE);
+}
 
-    int (i), (j);
-    i = 0;
-    j = 0;
-    if(node->argv)
-    {
-        while (node->argv[i])
-            i++;
-    }
-    new_arg = malloc(sizeof(char) * (i + 2));
-    if(!new_arg)
-        exit(1);
-    while (j < i)
-    {
-        new_arg[j] = node->argv[j];
-        j++;
-    }
-    new_arg[i] = ft_strdup(value);
-    new_arg[i + 1] = NULL;
-    if(node->argv)
-        free(node->argv);
-    node->argv = new_arg;
+void	add_arg(t_trs *node, char *value)
+{
+	char	**new_arg;
+
+	int(i), (j);
+	i = 0;
+	j = 0;
+	if (node->argv)
+	{
+		while (node->argv[i])
+			i++;
+	}
+	new_arg = malloc(sizeof(char) * (i + 2));
+	if (!new_arg)
+		exit(1);
+	while (j < i)
+	{
+		new_arg[j] = node->argv[j];
+		j++;
+	}
+	new_arg[i] = ft_strdup(value);
+	new_arg[i + 1] = NULL;
+	if (node->argv)
+		free(node->argv);
+	node->argv = new_arg;
 }

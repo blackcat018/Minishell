@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:14:55 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/05/26 22:57:52 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/19 17:01:14 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 void free_token_list(t_token *token)
 {
 	t_token *tmp;
-	tmp = token;
-	while(tmp)
+	while (token)
 	{
-		free(tmp);
-		token = token->next;
-		tmp = token;
+		tmp = token->next;
+		free(token->value);
+		free(token);
+		token = tmp;
 	}
-	free(token);
 }
+
 
 int match_pattern(char *pattern, char *str)
 {

@@ -64,6 +64,7 @@ typedef struct s_cmd
 	struct s_cmd *next;
 }t_cmd;
 
+void free_split(char **strs);
 int red_flag(t_token *token);
 void free_token_list(t_token *token);
 int is_ambiguous_redirect(char *expanded);
