@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/24 20:59:11 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:44:06 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int main(int ac, char ** av, char **env)
 	t_token *strip = NULL;
 	t_cmd *cmd = NULL;
     
-	atexit(ff);
+	// atexit(ff);
 	(void)ac;
 	(void)av;
 	// (void)env;

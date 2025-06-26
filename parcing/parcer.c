@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/19 20:54:16 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:44:31 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,12 @@ t_cmd	*store_cmds(t_token *token)
 		{
 			cmd->redirect[j] = ft_strdup(token->value);
 			token = token->next;
-			if (token)
-				cmd->file[j] = ft_strdup(token->value);
+			if (!token)
+			{
+				printf("bash: syntax error near unexpected token `newline'\n");
+				exit(1);
+			}
+			cmd->file[j] = ft_strdup(token->value);
 			j++;
 		}
 		token = token->next;
@@ -87,7 +91,7 @@ t_cmd	*store_cmds(t_token *token)
 	return (cmd);
 }
 
-t_cmd	*build_cmd_list(t_token *token) // parser is done! good job asshole!
+t_cmd	*build_cmd_list(t_token *token)
 {
 	t_cmd *head;
 	t_cmd *tail;
