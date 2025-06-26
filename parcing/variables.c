@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/19 17:04:44 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:26:09 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ char *get_env_value(char *name, char **env)
 		}
 		i++;
 	}
-	return ft_strdup("");
+	return (NULL);
 }
 
 char *replace_in_quotes(char *str, char **env) {
@@ -305,11 +305,13 @@ void error_checks(t_token *prev, t_token *token,char *expanded, int flag)
 			print_file_error(expanded);;
 }
 
+
 t_token *expand_variables(t_token *tokens, char **envp)
 {
 	t_token *result;
 	t_token *new;
 	int	flag;
+	int should_expand_vars;
 	t_token *prev;
 	char 	*res;
 
@@ -318,7 +320,8 @@ t_token *expand_variables(t_token *tokens, char **envp)
 	flag = 0;
 	while(tokens)
 	{
-		if(is_it_var(tokens->value) == 1)
+		should_expand_vars = !(prev && prev->type == HERE_DOC);
+		if(is_it_var(tokens->value) == 1 && should_expand_vars)
 		{
 			if(is_it_singled(tokens))
 			{
@@ -332,7 +335,6 @@ t_token *expand_variables(t_token *tokens, char **envp)
 			{
 				flag = 1;
 				res = handle_double(tokens,envp);
-				printf("\n====%s====\n",res);
 				new = create_token(QUOTED_VAR,res);
 				error_checks(prev,tokens,new->value,flag);
 				free(res);
@@ -360,18 +362,21 @@ t_token *expanding_it(t_token *token, char **env)
 	t_token *xpnd;
 	t_token *result;
 	t_token *new;
+	t_token *prev;
 	char **tmp;
 	int i;
 
 	result = NULL;
 	new = NULL;
 	tmp = NULL;
+	prev = NULL;
 	xpnd = expand_variables(token, env);
 	while(xpnd)
 	{
-		if(xpnd->type == VAR && ft_strchr(xpnd->value, ' '))
+		if(xpnd->type == VAR && ft_strchr(xpnd->value, ' ') && 
+		   (prev == NULL || prev->type != HERE_DOC))
 		{
-			 i = 0;
+			i = 0;
 			tmp = ft_split(xpnd->value, ' ');
 			if(!tmp)
 				return(NULL);
@@ -380,25 +385,26 @@ t_token *expanding_it(t_token *token, char **env)
 				new = create_token(VAR, tmp[i]);
 				if (!new)
 				{
-                    free_token_list(result);
+					free_token_list(result);
 					free_split(tmp);
-                    return NULL;
-                }
+					return NULL;
+				}
 				append_list(&result, new);
 				i++;
 			}
-			free(tmp);
+			free_split(tmp);
 		}
 		else
 		{
-            new = create_token(xpnd->type, ft_strdup(xpnd->value));
-            if (!new)
+			new = create_token(xpnd->type, ft_strdup(xpnd->value));
+			if (!new)
 			{
-                free_token_list(result);
-                return NULL;
-            }
-            append_list(&result, new);
-        }
+				free_token_list(result);
+				return NULL;
+			}
+			append_list(&result, new);
+		}
+		prev = xpnd;
 		xpnd = xpnd->next;
 	}
 	return(result);
