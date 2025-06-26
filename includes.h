@@ -102,6 +102,7 @@ int is_operator(t_token *node);
 // t_trs *create_node(char *value);
 char    *ft_strndup(const char *str, size_t n);
 
+void is_it_and(t_token **head, t_token **tail, int *i, char *input);
 void is_it_pipe(t_token **head, t_token **tail, int *i,char *input);
 void is_it_op(t_token **head, t_token **tail, int *i, char *input);
 void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c);

@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/26 16:44:31 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/26 17:35:18 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ int	is_token_redirect(t_token *R)
 	return (R->type == REDIR_IN || R->type == REDIR_OUT || R->type == APPEND
 		|| R->type == HERE_DOC);
 }
+int is_it_opp(t_token *op)
+{
+	return(op->type == AND || op->type == OR || op->type == PIPE);
+}
+
 int	arg_count(t_token *token, NodeType i)
 {
 	int	j;
@@ -77,6 +82,11 @@ t_cmd	*store_cmds(t_token *token)
 			if (!token)
 			{
 				printf("bash: syntax error near unexpected token `newline'\n");
+				exit(1);
+			}
+			if (is_token_redirect(token) || is_it_opp(token))
+			{
+				printf("syntax error near unexpected token `%s'\n", token->value);
 				exit(1);
 			}
 			cmd->file[j] = ft_strdup(token->value);

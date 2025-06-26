@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/19 17:06:27 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/26 17:32:03 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,24 @@ void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
     *tail = new;
     (*i)++;
 }
-
+void is_it_and(t_token **head, t_token **tail, int *i, char *input)
+{
+	t_token *new;
+	new = NULL;
+    if(input[*i] == '&' && input[*i+1] == '&' )
+    {
+        new = create_token(AND, "&&");
+        *i += 1;
+    }
+	if (!new)
+        return;
+    if (!*head)
+        *head = new;
+    else
+        (*tail)->next = new;
+    *tail = new;
+    (*i)++;
+}
 int is_token_breaker(char c) {
     return (c == ' ' || c == '|'||
             c == '<' || c == '>');
@@ -149,59 +166,3 @@ void is_it_op(t_token **head, t_token **tail, int *i, char *input)
     *tail = new;
     (*i)++;
 }
-
-// ""   ''
-// void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c)
-// {
-//     t_token *new;
-//     char *tmp;
-//     int start;
-//     int j;
-
-//     j = 0;
-//     (*i)++;
-//     start = *i - 1;
-//     if (c == '"')
-// 	{
-//         while (input[*i])
-// 		{
-//             if (input[*i] == c)
-//                 break;
-//             else
-//                 (*i)++;
-//         }
-//     } else {
-//         while (input[*i] && input[*i] != c) {
-//             (*i)++;
-//         }
-//     }    
-//     if(input[*i] != c)
-//     {
-//         ft_putstr_fd("minishell: unclosed quote\n",2);
-//         exit(1);
-//     }
-// 	(*i)++;
-//     tmp = malloc(sizeof(char) * ((*i) - start + 1));
-//     if(!tmp)
-//         return;
-//     while(j < *i - start)
-//     {
-//         tmp[j] = input[start +j];
-//         j++;
-//     }
-//     tmp[j] = '\0';
-// 	if(c == '"')
-// 		new = create_token(DOUBLE_QU, tmp);
-//     else 
-// 		new = create_token(SINGL_QU, tmp);
-//     if (!new)
-//         return;
-//     if (!*head)
-//     *head = new;
-//     else
-//         (*tail)->next = new;
-//     *tail = new;
-//     free(tmp);
-// }
-
-
