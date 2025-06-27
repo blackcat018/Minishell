@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/26 16:44:06 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/27 04:45:30 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,8 @@
 void print_tokens(t_token *tokens)
 {
     while (tokens) {
-		// int j = is_it_singled(tokens);
-		// if(j == 1)
-		// 	printf(GREEN "it has single quotes \n" RESET);
-		// else if(j == 0)
-		// 	printf(WHITE "does not have single quotes \n" RESET);
-        printf("Token is: %s\nType is: %d \nQuote flag is : %d\n\n", tokens->value, tokens->type, tokens->quote_flag);
+        printf("Token is: %s\nType is: %d \nQuote flag is : %d\n\n"
+				, tokens->value, tokens->type, tokens->quote_flag);
         tokens = tokens->next;
     }
 }
@@ -129,7 +125,7 @@ int main(int ac, char ** av, char **env)
 		clear_tokens(&output);
 		clear_tokens(&expand);
 		clear_tokens(&wild);
-		clear_tokens(&strip);
+		// clear_tokens(&strip);
 		clear_cmd(&cmd);
        free(input);
     }

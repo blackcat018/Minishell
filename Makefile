@@ -7,6 +7,7 @@ CFLAGS = -Wall -Wextra -Werror
 # Main files
 files = error_checks/err_handle error_checks/error_msg\
 		parcing/parcer parcing/token main\
+		parcing/pipe_err_check\
 		parcing/tokenizer parcing/variables\
 		utils/helper_funcs/helps quotes/quote_stripping\
 		wild_card/file_read utils/utils\

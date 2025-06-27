@@ -64,6 +64,7 @@ typedef struct s_cmd
 	struct s_cmd *next;
 }t_cmd;
 
+
 void free_split(char **strs);
 int red_flag(t_token *token);
 void free_token_list(t_token *token);
@@ -84,6 +85,8 @@ void append_list(t_token **head, t_token *new_node);
 
 char *strip_token(char *value);
 
+int pipe_err(t_token **list);
+int	is_token_redirect(t_token *R);
 int is_it_doubled(t_token *dollar);
 t_token *stripper(t_token *xpnd);
 

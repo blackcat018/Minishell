@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/26 17:32:03 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:49:17 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,22 @@ the tokenizer returns a linked list or a simple array that we then pass to the p
 
 
 // |
+void skip_whitespace(int *i, char *input)
+{
+    while (input[*i] && (input[*i] == ' ' || input[*i] == '\t'))
+        (*i)++;
+}
+
 void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;
+	new = NULL;
     if(input[*i] == '|' && input[*i+1] == '|' )
     {
         new = create_token(OR, "||");
         *i += 1;
     } 
-    else
+    else if(input[*i] == '|')
         new = create_token(PIPE, "|");
     if (!new)
         return;
@@ -80,34 +87,34 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;
     char *tmp;
-
     int (len), (start), (j);
     len = 0;
     j = 0;
     start = *i;
-	int in_quote = 0;
-	char quote_type = 0;
-	while (input[*i])
-	{
-		if (!in_quote && is_token_breaker(input[*i]))
-			break;
-
-		if ((input[*i] == '"' || input[*i] == '\''))
-		{
-			if (!in_quote)
-			{
-				in_quote = 1;
-				quote_type = input[*i];
-			}
-			else if (quote_type == input[*i])
-			{
-				in_quote = 0;
-			}
-	}
-
-	(*i)++;
-	len++;
-	}
+    int in_quote = 0;
+    char quote_type = 0;
+    
+    while (input[*i])
+    {
+        if (!in_quote && is_token_breaker(input[*i]))
+            break;
+        if ((input[*i] == '"' || input[*i] == '\''))
+        {
+            if (!in_quote)
+            {
+                in_quote = 1;
+                quote_type = input[*i];
+            }
+            else if (quote_type == input[*i])
+            {
+                in_quote = 0;
+            }
+        }
+        (*i)++;
+        len++;
+    }
+    if (len == 0)
+        return; 
     tmp = malloc(sizeof(char) * (len + 1));
     if (!tmp)
         return;
@@ -117,15 +124,16 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
         j++;
     }
     tmp[len] = '\0';
+    
     if(input[start] == '-')
         new = create_token(CMD_ARG, tmp);
-	else if (input[start] == '"')
-		new = create_token(DOUBLE_QU, tmp);
-	else if (input[start] == '\'')
-		new = create_token(SINGL_QU, tmp);
+    else if (input[start] == '"')
+        new = create_token(DOUBLE_QU, tmp);
+    else if (input[start] == '\'')
+        new = create_token(SINGL_QU, tmp);
     else
         new = create_token(COMMAND, tmp);
-	flag_check(input[start], tmp[len - 1],new,new->type);
+    flag_check(input[start], tmp[len - 1], new, new->type);
     free(tmp);
     if (!new)
         return;
@@ -134,7 +142,6 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     else
         (*tail)->next = new;
     *tail = new;
-    // (*i)++;
 }
 
 // >> , > , < , <<

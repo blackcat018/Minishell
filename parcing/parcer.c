@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/26 17:35:18 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/06/27 04:48:48 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,14 @@ t_cmd	*store_cmds(t_token *token)
 			if (!token)
 			{
 				printf("bash: syntax error near unexpected token `newline'\n");
-				exit(1);
+				// clear_tokens(token);
+				return(NULL);
 			}
 			if (is_token_redirect(token) || is_it_opp(token))
 			{
 				printf("syntax error near unexpected token `%s'\n", token->value);
-				exit(1);
+				// clear_tokens(token);
+				return(NULL);
 			}
 			cmd->file[j] = ft_strdup(token->value);
 			j++;
@@ -110,6 +112,8 @@ t_cmd	*build_cmd_list(t_token *token)
 	head = NULL;
 	cmd = NULL;
 	tail = NULL;
+	if (pipe_err(&token))
+		return NULL;
 	while (token)
 	{
 		cmd = store_cmds(token);
