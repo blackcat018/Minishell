@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/27 04:45:30 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:06:41 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,20 +66,38 @@ void clear_tokens(t_token **head)
 void clear_cmd(t_cmd **head)
 {
     t_cmd *tmp;
-	int i;
+    int i;
+
     while (*head)
     {
-		i = 0;
         tmp = *head;
         *head = (*head)->next;
-		if(tmp->argv){        
-			while(tmp->argv[i])
-				free(tmp->argv[i++]);
-			free(tmp->argv);
-		}
-		free(tmp->file);
-		free(tmp->redirect);
-        free(tmp); 
+
+        if (tmp->argv)
+        {
+            i = 0;
+            while (tmp->argv[i])
+                free(tmp->argv[i++]);
+            free(tmp->argv);
+        }
+
+        if (tmp->redirect)
+        {
+            i = 0;
+            while (tmp->redirect[i])
+                free(tmp->redirect[i++]);
+            free(tmp->redirect);
+        }
+
+        if (tmp->file)
+        {
+            i = 0;
+            while (tmp->file[i])
+                free(tmp->file[i++]);
+            free(tmp->file);
+        }
+
+        free(tmp);
     }
 }
 void ff()
@@ -97,7 +115,7 @@ int main(int ac, char ** av, char **env)
 	t_token *strip = NULL;
 	t_cmd *cmd = NULL;
     
-	// atexit(ff);
+	atexit(ff);
 	(void)ac;
 	(void)av;
 	// (void)env;

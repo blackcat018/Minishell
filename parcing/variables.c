@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/26 16:26:09 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:35:36 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -407,5 +407,6 @@ t_token *expanding_it(t_token *token, char **env)
 		prev = xpnd;
 		xpnd = xpnd->next;
 	}
+	free_token_list(xpnd);
 	return(result);
 }
