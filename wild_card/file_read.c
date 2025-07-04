@@ -83,9 +83,9 @@ int no_matches(char *token)
     struct dirent *entry;
 
 	dir = opendir(".");
-    if (!dir)
+    if(!dir)
         return (0);
-	count = 0;	
+    count = 0;	
 	while ((entry = readdir(dir)) != NULL)
 	{
         if (entry->d_name[0] == '.' && token[0] != '.')
@@ -125,7 +125,7 @@ char **expand_wildcard(char *token , NodeType type)
             continue;
         
         if (match_pattern(token, entry->d_name)) {
-            matches[count] = strdup(entry->d_name);
+            matches[count] = ft_strdup(entry->d_name);
             if (!matches[count]) {
                 while (count-- > 0) free(matches[count]);
                 free(matches);
@@ -169,13 +169,14 @@ t_token *handel_wild_card(t_token *xpnd)
 					return NULL;
 				}
 				append_list(&result, new);
+                free(res[i]);
 				i++;
 			}
             free(res);
         } 
         else
 		{
-            new = create_token(xpnd->type, ft_strdup(xpnd->value));
+            new = create_token(xpnd->type, xpnd->value);
             if (!new)
 			{
                 free_token_list(result);

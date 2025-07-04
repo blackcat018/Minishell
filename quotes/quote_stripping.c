@@ -62,6 +62,7 @@ t_token	*stripper(t_token *xpnd)
 			clear_tokens(&result);
 		}
 		append_list(&result, new);
+		free(res);
 		xpnd = xpnd->next;
 	}
 	return (result);

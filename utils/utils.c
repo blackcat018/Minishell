@@ -46,11 +46,10 @@ int check_quotes(char *str)
 {
 	char *back;
 
-	int (i), (flag), (len), (S_check), (D_check);
+	int (i), (len), (S_check), (D_check);
 	i = 0;
 	len = strlen(str) - 1;
-	flag = 0;
-	back = strdup(str);
+	back = ft_strdup(str);
 	D_check = double_quote_count(str);
 	S_check = single_quote_count(str);
 	if((D_check %2 != 0) || (S_check %2 != 0))

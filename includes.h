@@ -20,7 +20,7 @@
 #define SKYBLUE "\033[0;36m"
 #define RESET   "\033[0m"
 
-int g_exit_status;
+// int g_exit_status;
 
 typedef enum {
     COMMAND,// done.          0

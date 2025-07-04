@@ -109,7 +109,7 @@ char *strip_token(char *value)
     }
     if (quote_pos == -1)
     {
-        tmp = strdup(value);
+        tmp = ft_strdup(value);
         return tmp;
     }
     tmp = malloc(sizeof(char) * (ft_strlen(value)));
@@ -259,18 +259,13 @@ char *replace_in_arg(char *str, char **env)
 			result[j++] = str[i++];
 	}
 	result[j] = '\0';
-	return (ft_strdup(result));
+	return (result);
 }
 
 char *expand(t_token *tokens, char **env)
 {
 	char *var_val;
-	char **res;
 
-	int (i), (j);
-	i = 0;
-	j = 0;
-	res = NULL;
 	var_val = NULL;
 	var_val = replace_in_arg(tokens->value,env);
 	return(var_val);
@@ -294,30 +289,28 @@ int red_flag(t_token *token)
 	return( token->type == REDIR_IN);
 }
 
-void error_checks(t_token *prev, t_token *token,char *expanded, int flag)
-{
-		if(prev && red_flag(prev) && flag == 1)
-			print_file_error(expanded);
-		if(prev && red_flag(prev) && !is_it_doubled(token) &&
-		is_ambiguous_redirect(expanded))
-			print_ambiguous_redirect(var_name(token->value));
-		if(prev && red_flag(prev) && flag == 0)
-			print_file_error(expanded);;
-}
+// void error_checks(t_token *prev, t_token *token,char *expanded, int flag)
+// {
+// 		if(prev && red_flag(prev) && flag == 1)
+// 			print_file_error(expanded);
+// 		if(prev && red_flag(prev) && !is_it_doubled(token) &&
+// 		is_ambiguous_redirect(expanded))
+// 			print_ambiguous_redirect(var_name(token->value));
+// 		if(prev && red_flag(prev) && flag == 0)
+// 			print_file_error(expanded);;
+// }
 
 
 t_token *expand_variables(t_token *tokens, char **envp)
 {
 	t_token *result;
 	t_token *new;
-	int	flag;
 	int should_expand_vars;
 	t_token *prev;
 	char 	*res;
 
 	result = NULL;
 	prev = NULL;
-	flag = 0;
 	while(tokens)
 	{
 		should_expand_vars = !(prev && prev->type == HERE_DOC);
@@ -327,29 +320,27 @@ t_token *expand_variables(t_token *tokens, char **envp)
 			{
 				res = handle_double(tokens,envp);
 				new = create_token(QUOTED_VAR,res);
-				error_checks(prev,tokens,new->value,flag);
+				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 				
 			else if (check_quotes(tokens->value) == 2)
 			{
-				flag = 1;
 				res = handle_double(tokens,envp);
 				new = create_token(QUOTED_VAR,res);
-				error_checks(prev,tokens,new->value,flag);
+				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 			else
 			{
-				flag = 0;
 				res = expand(tokens,envp);
 				new = create_token(VAR,res);
-				error_checks(prev,tokens,new->value,flag);
+				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 		}
 		else
-			new = create_token(tokens->type, ft_strdup(tokens->value));
+			new = create_token(tokens->type, tokens->value);
 		append_list(&result, new);
 		prev = tokens;
 		tokens = tokens->next;
@@ -396,7 +387,7 @@ t_token *expanding_it(t_token *token, char **env)
 		}
 		else
 		{
-			new = create_token(xpnd->type, ft_strdup(xpnd->value));
+			new = create_token(xpnd->type, xpnd->value);
 			if (!new)
 			{
 				free_token_list(result);

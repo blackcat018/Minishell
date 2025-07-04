@@ -143,7 +143,7 @@ int main(int ac, char ** av, char **env)
 		clear_tokens(&output);
 		clear_tokens(&expand);
 		clear_tokens(&wild);
-		// clear_tokens(&strip);
+		clear_tokens(&strip);
 		clear_cmd(&cmd);
        free(input);
     }
