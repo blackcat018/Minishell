@@ -152,6 +152,21 @@ char *var_name(char *str)
     return dollar;
 }
 
+int double_dollars(char *result, int j)
+{
+    pid_t pid;
+    char *res;
+    int l;
+
+    pid = getpid();
+    res = ft_itoa((int)pid);
+    l = 0;
+    while (res[l])
+        result[j++] = res[l++];
+    free(res);
+    return (j);
+}
+
 char *get_env_value(char *name, char **env)
 {
 	int i = 0;
@@ -190,6 +205,11 @@ char *replace_in_quotes(char *str, char **env) {
             result[j++] = str[i++];
             continue;
         }
+		if(str[i] == '$' && str[i + 1] && str[i+1] == '$' && !in_single)
+		{
+			j = double_dollars(result, j);
+			i += 2;
+		}
         if (str[i] == '$' && (!in_single || in_double) && str[i+1] && 
             (ft_isalnum(str[i+1]) || str[i+1] == '_')) {
             int start = ++i;
@@ -243,6 +263,11 @@ char *replace_in_arg(char *str, char **env)
 	j = 0;
 	while (str[i])
 	{
+		if(str[i] == '$' && str[i + 1] && str[i+1] == '$')
+		{
+			j = double_dollars(result, j);
+			i += 2;
+		}
 		if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_'))
 		{
 			start = ++i;
@@ -288,19 +313,6 @@ int red_flag(t_token *token)
 {
 	return( token->type == REDIR_IN);
 }
-
-// void error_checks(t_token *prev, t_token *token,char *expanded, int flag)
-// {
-// 		if(prev && red_flag(prev) && flag == 1)
-// 			print_file_error(expanded);
-// 		if(prev && red_flag(prev) && !is_it_doubled(token) &&
-// 		is_ambiguous_redirect(expanded))
-// 			print_ambiguous_redirect(var_name(token->value));
-// 		if(prev && red_flag(prev) && flag == 0)
-// 			print_file_error(expanded);;
-// }
-
-
 t_token *expand_variables(t_token *tokens, char **envp)
 {
 	t_token *result;
@@ -322,7 +334,6 @@ t_token *expand_variables(t_token *tokens, char **envp)
 				name = var_name(tokens->value);
 				res = handle_double(tokens,envp);
 				new = create_token(QUOTED_VAR,res,name);
-				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 				
@@ -331,7 +342,6 @@ t_token *expand_variables(t_token *tokens, char **envp)
 				name = var_name(tokens->value);
 				res = handle_double(tokens,envp);
 				new = create_token(QUOTED_VAR,res,name);
-				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 			else
@@ -339,7 +349,6 @@ t_token *expand_variables(t_token *tokens, char **envp)
 				name = var_name(tokens->value);
 				res = expand(tokens,envp);
 				new = create_token(VAR,res,name);
-				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 		}
