@@ -34,11 +34,11 @@ void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
 	new = NULL;
     if(input[*i] == '|' && input[*i+1] == '|' )
     {
-        new = create_token(OR, "||");
+        new = create_token(OR, "||",NULL);
         *i += 1;
     } 
     else if(input[*i] == '|')
-        new = create_token(PIPE, "|");
+        new = create_token(PIPE, "|",NULL);
     if (!new)
         return;
     if (!*head)
@@ -54,7 +54,7 @@ void is_it_and(t_token **head, t_token **tail, int *i, char *input)
 	new = NULL;
     if(input[*i] == '&' && input[*i+1] == '&' )
     {
-        new = create_token(AND, "&&");
+        new = create_token(AND, "&&",NULL);
         *i += 1;
     }
 	if (!new)
@@ -126,13 +126,13 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     tmp[len] = '\0';
     
     if(input[start] == '-')
-        new = create_token(CMD_ARG, tmp);
+        new = create_token(CMD_ARG, tmp,NULL);
     else if (input[start] == '"')
-        new = create_token(DOUBLE_QU, tmp);
+        new = create_token(DOUBLE_QU, tmp,NULL);
     else if (input[start] == '\'')
-        new = create_token(SINGL_QU, tmp);
+        new = create_token(SINGL_QU, tmp,NULL);
     else
-        new = create_token(COMMAND, tmp);
+        new = create_token(COMMAND, tmp,NULL);
     flag_check(input[start], tmp[len - 1], new, new->type);
     free(tmp);
     if (!new)
@@ -152,18 +152,18 @@ void is_it_op(t_token **head, t_token **tail, int *i, char *input)
 	new = NULL;
     if(input[*i] == '<' && input[*i+1] == '<' )
     {
-        new = create_token(HERE_DOC, "<<");
+        new = create_token(HERE_DOC, "<<",NULL);
         *i += 1;
     }  
     else if(input[*i] == '>' && input[*i+1] == '>')
     {
-        new = create_token(APPEND, ">>");
+        new = create_token(APPEND, ">>",NULL);
         *i += 1;
     }
     else if(input[*i] == '>')
-        new = create_token(REDIR_OUT, ">");
+        new = create_token(REDIR_OUT, ">",NULL);
     else if(input[*i] == '<')
-        new = create_token(REDIR_IN, "<");
+        new = create_token(REDIR_IN, "<",NULL);
     if (!new)
         exit(1);
     if (!*head)

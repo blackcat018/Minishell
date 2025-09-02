@@ -160,7 +160,7 @@ t_token *handel_wild_card(t_token *xpnd)
 			
 			while (res[i])
 			{
-				new = create_token(xpnd->type, res[i]);
+				new = create_token(xpnd->type, res[i],xpnd->var_nam);
 				if (!new)
 				{
 					free_token_list(result);
@@ -176,7 +176,7 @@ t_token *handel_wild_card(t_token *xpnd)
         } 
         else
 		{
-            new = create_token(xpnd->type, xpnd->value);
+            new = create_token(xpnd->type, xpnd->value,xpnd->var_nam);
             if (!new)
 			{
                 free_token_list(result);

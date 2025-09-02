@@ -12,21 +12,6 @@
 
 #include "../includes.h"
 
-int	is_token_cmd(t_token *T)
-{
-	return (T->type == COMMAND || T->type == CMD_ARG || T->type == SINGL_QU
-		|| T->type == DOUBLE_QU || T->type == QUOTED_VAR || T->type == VAR);
-}
-
-int	is_token_redirect(t_token *R)
-{
-	return (R->type == REDIR_IN || R->type == REDIR_OUT || R->type == APPEND
-		|| R->type == HERE_DOC);
-}
-int is_it_opp(t_token *op)
-{
-	return(op->type == AND || op->type == OR || op->type == PIPE);
-}
 
 int	arg_count(t_token *token, NodeType i)
 {
@@ -53,15 +38,41 @@ int	redir_counter(t_token *token, NodeType i)
 	}
 	return (j);
 }
-t_cmd	*store_cmds(t_token *token)
+// Helper function: Populate the command structure with token data
+t_cmd	*populate_cmd_data(t_cmd *cmd, t_token *token)
 {
-	t_cmd	*cmd;
 	int		i;
 	int		j;
-	int		redir_count;
 
 	i = 0;
 	j = 0;
+	while (token && token->type != PIPE)
+	{
+		if (is_token_cmd(token))
+			cmd->argv[i++] = ft_strdup(token->value);
+		else if (is_token_redirect(token))
+		{
+			cmd->redirect[j] = ft_strdup(token->value);
+			token = token->next;
+			if (redir_check(token))
+				return (NULL);
+			cmd->file[j] = ft_strdup(token->value);
+			j++;
+		}
+		token = token->next;
+	}
+	cmd->argv[i] = NULL;
+	cmd->redirect[j] = NULL;
+	cmd->file[j] = NULL;
+	return (cmd);
+}
+
+// Main function: Initialize and allocate memory, then populate
+t_cmd	*store_cmds(t_token *token)
+{
+	t_cmd	*cmd;
+	int		redir_count;
+
 	redir_count = redir_counter(token, PIPE);
 	cmd = malloc(sizeof(t_cmd));
 	if (!cmd)
@@ -71,35 +82,9 @@ t_cmd	*store_cmds(t_token *token)
 	cmd->file = malloc(sizeof(char *) * (redir_count + 1));
 	if (!cmd->argv || !cmd->redirect || !cmd->file)
 		return (NULL);
-	while (token && token->type != PIPE)
-	{
-		if (is_token_cmd(token))
-			cmd->argv[i++] = ft_strdup(token->value);
-		else if (is_token_redirect(token))
-		{
-			cmd->redirect[j] = ft_strdup(token->value);
-			token = token->next;
-			if (!token)
-			{
-				printf("bash: syntax error near unexpected token `newline'\n");
-				// clear_tokens(token);
-				return(NULL);
-			}
-			if (is_token_redirect(token) || is_it_opp(token))
-			{
-				printf("syntax error near unexpected token `%s'\n", token->value);
-				// clear_tokens(token);
-				return(NULL);
-			}
-			cmd->file[j] = ft_strdup(token->value);
-			j++;
-		}
-		token = token->next;
-	}
-	cmd->argv[i] = NULL;
-	cmd->redirect[j] = NULL;
-	cmd->file[j] = NULL;
 	cmd->next = NULL;
+	if (!populate_cmd_data(cmd, token))
+		return (NULL);
 	return (cmd);
 }
 

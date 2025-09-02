@@ -308,6 +308,7 @@ t_token *expand_variables(t_token *tokens, char **envp)
 	int should_expand_vars;
 	t_token *prev;
 	char 	*res;
+	char 	*name;
 
 	result = NULL;
 	prev = NULL;
@@ -318,29 +319,32 @@ t_token *expand_variables(t_token *tokens, char **envp)
 		{
 			if(is_it_singled(tokens))
 			{
+				name = var_name(tokens->value);
 				res = handle_double(tokens,envp);
-				new = create_token(QUOTED_VAR,res);
+				new = create_token(QUOTED_VAR,res,name);
 				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 				
 			else if (check_quotes(tokens->value) == 2)
 			{
+				name = var_name(tokens->value);
 				res = handle_double(tokens,envp);
-				new = create_token(QUOTED_VAR,res);
+				new = create_token(QUOTED_VAR,res,name);
 				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 			else
 			{
+				name = var_name(tokens->value);
 				res = expand(tokens,envp);
-				new = create_token(VAR,res);
+				new = create_token(VAR,res,name);
 				// error_checks(prev,tokens,new->value,flag);
 				free(res);
 			}
 		}
 		else
-			new = create_token(tokens->type, tokens->value);
+			new = create_token(tokens->type, tokens->value,NULL);
 		append_list(&result, new);
 		prev = tokens;
 		tokens = tokens->next;
@@ -362,6 +366,7 @@ t_token *expanding_it(t_token *token, char **env)
 	tmp = NULL;
 	prev = NULL;
 	xpnd = expand_variables(token, env);
+	t_token *xpnd_head = xpnd;
 	while(xpnd)
 	{
 		if(xpnd->type == VAR && ft_strchr(xpnd->value, ' ') && 
@@ -373,7 +378,7 @@ t_token *expanding_it(t_token *token, char **env)
 				return(NULL);
 			while(tmp[i])
 			{
-				new = create_token(VAR, tmp[i]);
+				new = create_token(VAR, tmp[i],xpnd->var_nam);
 				if (!new)
 				{
 					free_token_list(result);
@@ -387,7 +392,7 @@ t_token *expanding_it(t_token *token, char **env)
 		}
 		else
 		{
-			new = create_token(xpnd->type, xpnd->value);
+			new = create_token(xpnd->type, xpnd->value,xpnd->var_nam);
 			if (!new)
 			{
 				free_token_list(result);
@@ -398,6 +403,6 @@ t_token *expanding_it(t_token *token, char **env)
 		prev = xpnd;
 		xpnd = xpnd->next;
 	}
-	free_token_list(xpnd);
+	free_token_list(xpnd_head);
 	return(result);
 }

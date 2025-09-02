@@ -20,7 +20,6 @@ int pipe_err(t_token **list)
 	if (curr && curr->type == PIPE)
 	{
 		printf("syntax error near unexpected token `|'\n");
-		clear_tokens(list);
 		return (1);
 	}
 	while (curr)
@@ -28,7 +27,6 @@ int pipe_err(t_token **list)
 		if (curr->type == PIPE && curr->next && curr->next->type == PIPE)
 		{
 			printf("syntax error near unexpected token `|'\n");
-			clear_tokens(list);
 			return (1);
 		}
 		last = curr;
@@ -37,7 +35,6 @@ int pipe_err(t_token **list)
 	if (last && last->type == PIPE)
 	{
 		printf("syntax error near unexpected token `|'\n");
-		clear_tokens(list);
 		return (1);
 	}
 	return (0);

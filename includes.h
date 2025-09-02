@@ -41,6 +41,7 @@ typedef enum {
 
 typedef struct s_token {
     char *value;
+     char *var_nam;
     NodeType type;
 	int quote_flag;
     struct s_token *next;
@@ -90,7 +91,7 @@ int	is_token_redirect(t_token *R);
 int is_it_doubled(t_token *dollar);
 t_token *stripper(t_token *xpnd);
 
-t_token *create_token(NodeType type, char *value);
+t_token	*create_token(NodeType type, char *value, char *var_nam);
 void clear_tokens(t_token **head);
 void print_tokens(t_token *tokens);
 t_token *tokenizer(t_token **head, t_token **tail,char *input);
@@ -112,4 +113,9 @@ void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c);
 void is_it_word(t_token **head, t_token **tail, int *i, char *input);
 // void is_it_and(t_token **head, t_token **tail, int *i, char *input);
 
+int	is_token_cmd(t_token *T);
+int	is_token_redirect(t_token *R);
+int is_it_opp(t_token *op);
+int is_empty_string(t_token *token);
+int redir_check (t_token *token);
 #endif

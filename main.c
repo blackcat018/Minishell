@@ -100,10 +100,10 @@ void clear_cmd(t_cmd **head)
         free(tmp);
     }
 }
-void ff()
-{
-	system("leaks minishell");
-}
+// void ff()
+// {
+// 	system("leaks minishell");
+// }
 int main(int ac, char ** av, char **env)
 {
     char *input;
@@ -115,7 +115,7 @@ int main(int ac, char ** av, char **env)
 	t_token *strip = NULL;
 	t_cmd *cmd = NULL;
     
-	atexit(ff);
+	// atexit(ff);
 	(void)ac;
 	(void)av;
 	// (void)env;
@@ -138,15 +138,18 @@ int main(int ac, char ** av, char **env)
 		wild = handel_wild_card(expand);
 		strip = stripper(wild);
 		cmd = build_cmd_list(strip);
-		print_parse(cmd);
+        if(cmd)
+		    print_parse(cmd);
 		// print_tokens(output);
 		clear_tokens(&output);
 		clear_tokens(&expand);
 		clear_tokens(&wild);
 		clear_tokens(&strip);
-		clear_cmd(&cmd);
+		if(cmd)
+            clear_cmd(&cmd);
        free(input);
     }
+    clear_history();
     return 0;
 }
 

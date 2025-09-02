@@ -2,12 +2,12 @@ NAME = minishell
 LIBNAME = libmini.a
 CC = gcc
 LDFLAGS = -lreadline -lncurses
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 # Main files
-files = error_checks/err_handle error_checks/error_msg\
-		parcing/parcer parcing/token main\
-		parcing/pipe_err_check\
+files = parcing/parcer parcing/token main\
+		error_checks/pipe_err_check error_checks/redirection_err\
+		error_checks/side_functions\
 		parcing/tokenizer parcing/variables\
 		utils/helper_funcs/helps quotes/quote_stripping\
 		wild_card/file_read utils/utils\

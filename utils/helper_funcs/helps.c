@@ -34,7 +34,7 @@ char	*ft_strndup(const char *str, size_t n)
 	return (dup);
 }
 
-t_token	*create_token(NodeType type, char *value)
+t_token	*create_token(NodeType type, char *value, char *var_nam)
 {
 	t_token	*new_token;
 
@@ -43,6 +43,7 @@ t_token	*create_token(NodeType type, char *value)
 		return (NULL);
 	new_token->value = ft_strdup(value);
 	new_token->type = type;
+	new_token->var_nam = var_nam;
 	new_token->next = NULL;
 	return (new_token);
 }
