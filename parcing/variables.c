@@ -184,7 +184,8 @@ char *get_env_value(char *name, char **env)
 	return (NULL);
 }
 
-char *replace_in_quotes(char *str, char **env) {
+char *replace_in_quotes(char *str, char **env)
+{
     char *result = malloc(4096);
     if (!result) return NULL;
 
@@ -255,7 +256,7 @@ char *replace_in_arg(char *str, char **env)
 	char	*var;
 	char	*val;
 
-	int (i),(j),(k), (start);
+	int (i),(j),(k), (start), (count), (mod);
 	result = malloc(4096);
 	if (!result)
 		return NULL;
@@ -263,22 +264,35 @@ char *replace_in_arg(char *str, char **env)
 	j = 0;
 	while (str[i])
 	{
-		if(str[i] == '$' && str[i + 1] && str[i+1] == '$')
+		if(str[i] == '$')
 		{
-			j = double_dollars(result, j);
-			i += 2;
-		}
-		if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_'))
-		{
-			start = ++i;
-			while (str[i] && (ft_isalnum(str[i]) || str[i] == '_') )
-				i++;
-			var = ft_substr(str, start, i - start);
-			val = get_env_value(var, env);
-			k = 0;
-			while (val && val[k])
-				result[j++] = val[k++];
-			(free(var),free(val));
+			count = 0;
+			while(str[i+count] == '$')
+				count++;
+			mod = count / 2;
+			while(mod--)
+				j = double_dollars(result,j);
+			if(count % 2 == 1)
+			{
+				i += count;
+				if(str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+				{
+					                start = i;
+                while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+                    i++;
+                var = ft_substr(str, start, i - start);
+                val = get_env_value(var, env);
+                k = 0;
+                while (val && val[k])
+                    result[j++] = val[k++];
+                free(var);
+                free(val);
+				}
+				else
+				result[j++] = '$';
+			}
+			else
+				i += count;
 		}
 		else
 			result[j++] = str[i++];
