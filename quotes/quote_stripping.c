@@ -35,9 +35,7 @@ char	*strip_str(char *str)
 				i++;
 		}
 		else
-		{
 			res[k++] = str[i++];
-		}
 	}
 	res[k] = '\0';
 	return (res);

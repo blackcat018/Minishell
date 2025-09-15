@@ -48,13 +48,13 @@ typedef struct s_token {
 } t_token;
 
 
-typedef struct s_trs {
-    char            **argv;
-	char			*value;
-	NodeType	    type;
-    struct s_trs    *left;
-    struct s_trs    *right;
-} t_trs;
+typedef struct s_ctx
+{
+    int i;
+    int j;
+    int in_single;
+    int in_double;
+}   t_ctx;
 
 typedef struct s_cmd
 {
@@ -69,7 +69,6 @@ typedef struct s_cmd
 void free_split(char **strs);
 int red_flag(t_token *token);
 void free_token_list(t_token *token);
-int is_ambiguous_redirect(char *expanded);
 t_token *handel_wild_card(t_token *xpnd);
 int check_quotes(char *str);
 // void err_handle(t_token *xpnd, char **envp); tf were you thinking!
@@ -118,4 +117,16 @@ int	is_token_redirect(t_token *R);
 int is_it_opp(t_token *op);
 int is_empty_string(t_token *token);
 int redir_check (t_token *token);
+
+char	*replace_in_quotes(char *str, char **env);
+char *handle_double(t_token *token, char **env);
+char *expand(t_token *tokens, char **env);
+char *replace_in_arg(char *str, char **env);
+int is_it_var(char *str);
+char *var_name(char *str);
+char *get_env_value(char *name, char **env);
+int double_dollars(char *result, int j);
+int handle_token(t_token *xpnd, t_token **result, t_token *prev);
+int split_var_token(t_token *xpnd, t_token **result);
+int copy_token(t_token *xpnd, t_token **result);
 #endif

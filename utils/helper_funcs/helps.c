@@ -47,47 +47,8 @@ t_token	*create_token(NodeType type, char *value, char *var_nam)
 	new_token->next = NULL;
 	return (new_token);
 }
-t_trs	*create_node(char *value)
-{
-	t_trs	*new_node;
-
-	new_node = malloc(sizeof(t_trs));
-	if (!new_node)
-		return (NULL);
-	new_node->value = ft_strdup(value);
-	new_node->right = NULL;
-	new_node->left = NULL;
-	return (new_node);
-}
 
 int	is_operator(t_token *node)
 {
 	return (node->type == PIPE);
-}
-
-void	add_arg(t_trs *node, char *value)
-{
-	char	**new_arg;
-
-	int(i), (j);
-	i = 0;
-	j = 0;
-	if (node->argv)
-	{
-		while (node->argv[i])
-			i++;
-	}
-	new_arg = malloc(sizeof(char) * (i + 2));
-	if (!new_arg)
-		exit(1);
-	while (j < i)
-	{
-		new_arg[j] = node->argv[j];
-		j++;
-	}
-	new_arg[i] = ft_strdup(value);
-	new_arg[i + 1] = NULL;
-	if (node->argv)
-		free(node->argv);
-	node->argv = new_arg;
 }

@@ -8,7 +8,9 @@ CFLAGS = -Wall -Wextra -Werror -g
 files = parcing/parcer parcing/token main\
 		error_checks/pipe_err_check error_checks/redirection_err\
 		error_checks/side_functions\
-		parcing/tokenizer parcing/variables\
+		parcing/tokenizer var_expansion/arg_replace\
+		var_expansion/expanding var_expansion/misc\
+		var_expansion/support var_expansion/variables\
 		utils/helper_funcs/helps quotes/quote_stripping\
 		wild_card/file_read utils/utils\
 

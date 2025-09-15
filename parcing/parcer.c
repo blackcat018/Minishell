@@ -38,7 +38,6 @@ int	redir_counter(t_token *token, NodeType i)
 	}
 	return (j);
 }
-// Helper function: Populate the command structure with token data
 t_cmd	*populate_cmd_data(t_cmd *cmd, t_token *token)
 {
 	int		i;
@@ -67,7 +66,6 @@ t_cmd	*populate_cmd_data(t_cmd *cmd, t_token *token)
 	return (cmd);
 }
 
-// Main function: Initialize and allocate memory, then populate
 t_cmd	*store_cmds(t_token *token)
 {
 	t_cmd	*cmd;
