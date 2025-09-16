@@ -56,6 +56,11 @@ int handle_expansion(char *str, char *result, t_ctx *ctx, char **env)
         ctx->i += 2;
         return (1);
     }
+    if (str[ctx->i] == '$' && str[ctx->i + 1] == '"' && !ctx->in_single)
+    {
+        ctx->i++;
+        return (1);
+    }
     if (str[ctx->i] == '$' && !ctx->in_single &&
         (ft_isalnum(str[ctx->i + 1]) || str[ctx->i + 1] == '_'))
     {
@@ -64,6 +69,7 @@ int handle_expansion(char *str, char *result, t_ctx *ctx, char **env)
     }
     return (0);
 }
+
 
 char *replace_in_quotes(char *str, char **env)
 {
