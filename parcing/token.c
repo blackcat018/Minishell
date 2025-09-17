@@ -6,22 +6,12 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/06/26 18:49:17 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/17 18:26:54 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
-/*
-we will have to go over the command char by char and when we ever encounter
-an operator  (|, >, <, >>, <<), a whitespace single or double quotes, we make a token!
-the operators are tokens themselves!
-if we stumbel upon "" or '' we make a cheackpoint at the start of the quote untill 
-we reach the end of it ! ad whatecer is in between we treat it as a token (script, string...)
-the tokenizer returns a linked list or a simple array that we then pass to the parcer!
-*/
 
-
-// |
 void skip_whitespace(int *i, char *input)
 {
     while (input[*i] && (input[*i] == ' ' || input[*i] == '\t'))
@@ -144,7 +134,6 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     *tail = new;
 }
 
-// >> , > , < , <<
 void is_it_op(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;

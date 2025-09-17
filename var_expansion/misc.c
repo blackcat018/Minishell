@@ -1,37 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variables.c                                        :+:      :+:    :+:   */
+/*   misc.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/07/04 20:35:36 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/17 21:44:42 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
 
-char	*remove_quotes(char *value)
+char *remove_quotes(char *value)
 {
-	int		i;
-	int		j;
-	char	*tmp;
+    int len;
+    char *result;
 
-	tmp = malloc(sizeof(char) * (ft_strlen(value)));
-	if (!tmp)
-		return (NULL);
-	i = 0;
-	j = 0;
-	while (value[i] != '\0')
-	{
-		if (value[i] != '"')
-			tmp[j++] = value[i];
-		i++;
-	}
-	tmp[j] = '\0';
-	return (tmp);
+	int (i),(j);
+    len = ft_strlen(value);
+    if (len < 2)
+        return ft_strdup(value);
+    if ((value[0] == '"' && value[len - 1] == '"') ||
+        (value[0] == '\'' && value[len - 1] == '\''))
+    {
+        result = malloc(len - 1);
+        if (!result)
+            return NULL;
+        i = 1;
+        j = 0;
+        while (i < len - 1)
+        {
+            result[j] = value[i];
+            i++;
+            j++;
+        }
+        result[j] = '\0';
+        return result;
+    }
+    return (ft_strdup(value));
 }
+
 char	*strip_token(char *value)
 {
 	int		i;
@@ -52,6 +61,7 @@ char	*strip_token(char *value)
 		return (ft_strdup(value));
 	return (remove_quotes(value));
 }
+
 int double_dollars(char *result, int j)
 {
     pid_t pid;
@@ -66,6 +76,7 @@ int double_dollars(char *result, int j)
     free(res);
     return (j);
 }
+
 char *get_env_value(char *name, char **env)
 {
 	int i = 0;

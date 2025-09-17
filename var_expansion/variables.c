@@ -6,34 +6,45 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/07/04 20:35:36 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/17 21:18:43 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
 
+int token_has_quotes(t_token *token)
+{
+    int i = 0;
+    while (token->value[i])
+    {
+        if (token->value[i] == '\'' || token->value[i] == '"')
+            return 1; // contains quote
+        i++;
+    }
+    return 0;
+}
+
 t_token *expand_token(t_token *token, char **envp)
 {
     t_token *new;
     char *res;
-    char *name;
+    char *name = var_name(token->value);
 
-    if (is_it_singled(token) || check_quotes(token->value) == 2)
-    {
-        name = var_name(token->value);
+    // Use handle_double only if token contains quotes
+    if (token_has_quotes(token))
         res = handle_double(token, envp);
-        new = create_token(QUOTED_VAR, res, name);
-        free(res);
-    }
     else
-    {
-        name = var_name(token->value);
         res = expand(token, envp);
+
+    if (token_has_quotes(token))
+        new = create_token(QUOTED_VAR, res, name);
+    else
         new = create_token(VAR, res, name);
-        free(res);
-    }
+
+    free(res);
     return new;
 }
+
 
 t_token *expand_variables(t_token *tokens, char **envp)
 {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variables.c                                        :+:      :+:    :+:   */
+/*   arg_replace.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/07/04 20:35:36 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/17 22:11:16 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,39 +70,60 @@ int handle_expansion(char *str, char *result, t_ctx *ctx, char **env)
     return (0);
 }
 
-
 char *replace_in_quotes(char *str, char **env)
 {
     char *result;
-    t_ctx ctx;
-
+	int (i),(j),(in_single),(in_double);
+    i = 0;
+	j = 0;
+    in_single = 0;
+	in_double = 0;
+    
     result = malloc(4096);
     if (!result)
-        return (NULL);
-    ctx.i = 0;
-    ctx.j = 0;
-    ctx.in_single = 0;
-    ctx.in_double = 0;
-    while (str[ctx.i])
+        return NULL;
+    while (str[i])
     {
-        if (handle_quotes(str, result, &ctx))
-            continue;
-        if (handle_expansion(str, result, &ctx, env))
-            continue;
-        result[ctx.j++] = str[ctx.i++];
+        if (str[i] == '\'' && !in_double)
+        {
+            in_single = !in_single;
+            result[j++] = str[i++];
+        }
+        else if (str[i] == '"' && !in_single)
+        {
+            in_double = !in_double;
+            result[j++] = str[i++];
+        }
+        else if (str[i] == '$' && !in_single)
+        {
+            if (str[i + 1] == '$')
+            {
+                j = double_dollars(result, j);
+                i += 2;
+            }
+            else if (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
+                j = replace_variable(str, &i, result, j, env);
+            else
+                result[j++] = str[i++];
+        }
+        else
+            result[j++] = str[i++];
     }
-    result[ctx.j] = '\0';
-    return (result);
+    result[j] = '\0';
+    return result;
 }
 
 char *handle_double(t_token *token, char **env)
 {
-    char *stripped;
-    char *var_val;
+    char *expanded;
+    char *final_result;
     
-    var_val = replace_in_quotes(token->value, env);
-	stripped = strip_token(var_val);
-    free(var_val);  // Don't forget to free stripped token
-    return stripped;
+    expanded = replace_in_quotes(token->value, env);
+    if (!expanded)
+        return NULL;
+    final_result = remove_quotes(expanded);
+    free(expanded);
+    
+    return final_result;
 }
 

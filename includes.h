@@ -119,6 +119,7 @@ int is_empty_string(t_token *token);
 int redir_check (t_token *token);
 
 char	*replace_in_quotes(char *str, char **env);
+char	*strip_str(char *str);
 char *handle_double(t_token *token, char **env);
 char *expand(t_token *tokens, char **env);
 char *replace_in_arg(char *str, char **env);
@@ -128,5 +129,6 @@ char *get_env_value(char *name, char **env);
 int double_dollars(char *result, int j);
 int handle_token(t_token *xpnd, t_token **result, t_token *prev);
 int split_var_token(t_token *xpnd, t_token **result);
+char	*remove_quotes(char *value);
 int copy_token(t_token *xpnd, t_token **result);
 #endif

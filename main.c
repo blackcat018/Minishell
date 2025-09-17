@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/07/04 20:06:41 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/17 20:51:25 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 void print_tokens(t_token *tokens)//just for testing
 {
     while (tokens) {
-        printf("Token is: %s\nType is: %d \nQuote flag is : %d\n\n"
-				, tokens->value, tokens->type, tokens->quote_flag);
+        printf("\n\nToken is: %s\n"
+				, tokens->value);
         tokens = tokens->next;
     }
 }
@@ -39,6 +39,7 @@ void print_parse(t_cmd *cmd) //just for testing
 			{
 				printf(YELLOW "Redirect[%d]: %s\n" RESET, i, cmd->redirect[i]);
 				printf(SKYBLUE "File[%d]: %s\n" RESET, i, cmd->file[i]);
+				printf("\n\n\n\n");
 				i++;
 			}
 		}
@@ -132,7 +133,7 @@ void process_line(char *input, char **env)
 
     if (cmd)
         print_parse(cmd);
-
+	// print_tokens(output);
     free_token_lists(&output, &expand, &wild, &strip);
     if (cmd)
         clear_cmd(&cmd);
