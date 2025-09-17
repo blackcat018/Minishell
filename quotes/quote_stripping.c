@@ -50,7 +50,10 @@ t_token	*stripper(t_token *xpnd)
 	result = NULL;
 	while (xpnd)
 	{
-		res = strip_str(xpnd->value);
+		if (!xpnd->var_nam)
+			res = strip_str(xpnd->value);
+		else
+			res = ft_strdup(xpnd->value);
 		if (!res)
 			clear_tokens(&result);
 		new = create_token(xpnd->type, res,xpnd->var_nam);

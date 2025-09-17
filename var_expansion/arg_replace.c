@@ -100,11 +100,6 @@ char *handle_double(t_token *token, char **env)
     char *stripped;
     char *var_val;
     
-    if(check_quotes(token->value) == 3)
-    {
-        printf(REDD"minishell : unclosed quotes!\n"RESET);
-        return NULL;
-    }
     var_val = replace_in_quotes(token->value, env);
 	stripped = strip_token(var_val);
     free(var_val);  // Don't forget to free stripped token

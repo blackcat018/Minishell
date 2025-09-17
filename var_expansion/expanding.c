@@ -76,7 +76,6 @@ char *replace_in_arg(char *str, char **env)
     return result;
 }
 
-
 char *expand(t_token *tokens, char **env)
 {
 	char *var_val;
