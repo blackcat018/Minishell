@@ -6,23 +6,11 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/09/17 21:18:43 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/20 18:34:19 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
-
-int token_has_quotes(t_token *token)
-{
-    int i = 0;
-    while (token->value[i])
-    {
-        if (token->value[i] == '\'' || token->value[i] == '"')
-            return 1; // contains quote
-        i++;
-    }
-    return 0;
-}
 
 t_token *expand_token(t_token *token, char **envp)
 {
@@ -30,7 +18,6 @@ t_token *expand_token(t_token *token, char **envp)
     char *res;
     char *name = var_name(token->value);
 
-    // Use handle_double only if token contains quotes
     if (token_has_quotes(token))
         res = handle_double(token, envp);
     else

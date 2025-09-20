@@ -54,6 +54,7 @@ typedef struct s_ctx
     int j;
     int in_single;
     int in_double;
+	int len;
 }   t_ctx;
 
 typedef struct s_cmd
@@ -69,8 +70,9 @@ typedef struct s_cmd
 void free_split(char **strs);
 int red_flag(t_token *token);
 void free_token_list(t_token *token);
+int token_has_quotes(t_token *token);
 t_token *handel_wild_card(t_token *xpnd);
-int check_quotes(char *str);
+// int check_quotes(char *str);
 // void err_handle(t_token *xpnd, char **envp); tf were you thinking!
 
 void	print_system_error(char *context);
@@ -101,20 +103,23 @@ t_cmd *build_cmd_list(t_token *token);
 int is_it_singled(t_token *dollar);
 
 // void add_arg(t_trs *node, char *value);
-int is_operator(t_token *node);
+// int is_operator(t_token *node);
 // t_trs *create_node(char *value);
-char    *ft_strndup(const char *str, size_t n);
+// char    *ft_strndup(const char *str, size_t n);
 
 void is_it_and(t_token **head, t_token **tail, int *i, char *input);
 void is_it_pipe(t_token **head, t_token **tail, int *i,char *input);
 void is_it_op(t_token **head, t_token **tail, int *i, char *input);
 void is_it_quote(t_token **head, t_token **tail, int *i, char *input, char c);
 void is_it_word(t_token **head, t_token **tail, int *i, char *input);
+int make_full_token(char *input, int len, int start, t_token **new);
+void get_full_quote(char *input, int* i, int *in_q, char *type, int *len);
 // void is_it_and(t_token **head, t_token **tail, int *i, char *input);
 
 int	is_token_cmd(t_token *T);
 int	is_token_redirect(t_token *R);
 int is_it_opp(t_token *op);
+int is_token_breaker(char c);
 int is_empty_string(t_token *token);
 int redir_check (t_token *token);
 

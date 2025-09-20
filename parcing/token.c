@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/09/17 18:26:54 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/20 19:52:34 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,26 +18,6 @@ void skip_whitespace(int *i, char *input)
         (*i)++;
 }
 
-void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
-{
-    t_token *new;
-	new = NULL;
-    if(input[*i] == '|' && input[*i+1] == '|' )
-    {
-        new = create_token(OR, "||",NULL);
-        *i += 1;
-    } 
-    else if(input[*i] == '|')
-        new = create_token(PIPE, "|",NULL);
-    if (!new)
-        return;
-    if (!*head)
-        *head = new;
-    else
-        (*tail)->next = new;
-    *tail = new;
-    (*i)++;
-}
 void is_it_and(t_token **head, t_token **tail, int *i, char *input)
 {
 	t_token *new;
@@ -60,71 +40,25 @@ int is_token_breaker(char c) {
     return (c == ' ' || c == '|'||
             c == '<' || c == '>');
 }
-void flag_check(char start, char end, t_token *token, int type)
-{
-	if (type == SINGL_QU || type == DOUBLE_QU)
-	{
-		if(start == end)
-			token->quote_flag = 0;
-		else if (start != end)
-			token->quote_flag = 1;
-		else 
-		token->quote_flag = 0;
-	}
-}
 
 void is_it_word(t_token **head, t_token **tail, int *i, char *input)
 {
     t_token *new;
-    char *tmp;
-    int (len), (start), (j);
+	char quote_type;
+	
+    int (len), (start), (j),(in_quote);
     len = 0;
     j = 0;
     start = *i;
-    int in_quote = 0;
-    char quote_type = 0;
-    
-    while (input[*i])
-    {
-        if (!in_quote && is_token_breaker(input[*i]))
-            break;
-        if ((input[*i] == '"' || input[*i] == '\''))
-        {
-            if (!in_quote)
-            {
-                in_quote = 1;
-                quote_type = input[*i];
-            }
-            else if (quote_type == input[*i])
-            {
-                in_quote = 0;
-            }
-        }
-        (*i)++;
-        len++;
-    }
+    in_quote = 0;
+    quote_type = 0;
+	new = NULL;
+	get_full_quote(input,i,&in_quote,&quote_type,&len);
     if (len == 0)
         return; 
-    tmp = malloc(sizeof(char) * (len + 1));
-    if (!tmp)
-        return;
-    while (j < len)
-    {
-        tmp[j] = input[start + j];
-        j++;
-    }
-    tmp[len] = '\0';
-    
-    if(input[start] == '-')
-        new = create_token(CMD_ARG, tmp,NULL);
-    else if (input[start] == '"')
-        new = create_token(DOUBLE_QU, tmp,NULL);
-    else if (input[start] == '\'')
-        new = create_token(SINGL_QU, tmp,NULL);
-    else
-        new = create_token(COMMAND, tmp,NULL);
-    flag_check(input[start], tmp[len - 1], new, new->type);
-    free(tmp);
+	j = make_full_token(input,len,start,&new);
+	if(j == -1)
+		return;
     if (!new)
         return;
     if (!*head)

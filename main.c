@@ -6,7 +6,7 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/09/17 20:51:25 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/20 19:40:02 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void print_tokens(t_token *tokens)//just for testing
         tokens = tokens->next;
     }
 }
-void print_parse(t_cmd *cmd) //just for testing
+void print_parse(t_cmd *cmd)//just for testing 
 {
     int i;
 
@@ -169,8 +169,8 @@ char *read_complete_line(void)
         char *more = readline("> ");
         if (!more) 
         {
-            printf("minishell: unexpected EOF while looking for matching quote\n"
-                    "minishell: syntax error: unexpected end of file\n");
+            printf("bash: unexpected EOF while looking for matching quote\n"
+                    "bash: syntax error: unexpected end of file\n");
             free(line);
             return NULL;
         }

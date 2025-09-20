@@ -6,39 +6,52 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/09/17 21:44:42 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/20 18:50:29 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
 
+char * unquoted(t_ctx *ctx, char *value)
+{
+	char *result;
+
+	result = malloc(ctx->len + 1);
+	if (!result)
+        return NULL;
+	while (ctx->i < ctx->len)
+    {
+        if (value[ctx->i] == '\'' && !ctx->in_double)
+        {
+            ctx->in_single = !ctx->in_single;
+            ctx->i++;
+        }
+        else if (value[ctx->i] == '"' && !ctx->in_single)
+        {
+            ctx->in_double = !ctx->in_double;
+            ctx->i++;
+        }
+        else
+            result[ctx->j++] = value[ctx->i++];
+    }
+	result[ctx->j] = '\0';
+	return(result);
+}
+
 char *remove_quotes(char *value)
 {
-    int len;
-    char *result;
+	char *result;
+	t_ctx ctx;
 
-	int (i),(j);
-    len = ft_strlen(value);
-    if (len < 2)
-        return ft_strdup(value);
-    if ((value[0] == '"' && value[len - 1] == '"') ||
-        (value[0] == '\'' && value[len - 1] == '\''))
-    {
-        result = malloc(len - 1);
-        if (!result)
-            return NULL;
-        i = 1;
-        j = 0;
-        while (i < len - 1)
-        {
-            result[j] = value[i];
-            i++;
-            j++;
-        }
-        result[j] = '\0';
-        return result;
-    }
-    return (ft_strdup(value));
+	ctx.i = 0;
+	ctx.j = 0;
+	ctx.in_single = 0;
+	ctx.in_double = 0;
+    if (!value)
+        return NULL;
+    ctx.len = ft_strlen(value);
+	result = unquoted(&ctx,value);
+    return (result);
 }
 
 char	*strip_token(char *value)
@@ -94,11 +107,3 @@ char *get_env_value(char *name, char **env)
 	return (NULL);
 }
 
-int handle_token(t_token *xpnd, t_token **result, t_token *prev)
-{
-    if (xpnd->type == VAR && ft_strchr(xpnd->value, ' ') &&
-        (prev == NULL || prev->type != HERE_DOC))
-        return split_var_token(xpnd, result);
-    else
-        return copy_token(xpnd, result);
-}

@@ -13,67 +13,46 @@
 
 #include "../includes.h"
 
-int replace_single_variable(char *str, int *i, char *result, int j, char **env)
+int replace_single_variable(char *str, t_ctx *ctx, char *result, char **env)
 {
     int start, k;
     char *var;
     char *val;
 
-    start = *i;
-    while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-        (*i)++;
-    var = ft_substr(str, start, *i - start);
+    start = ctx->i;
+    while (str[ctx->i] && (ft_isalnum(str[ctx->i]) || str[ctx->i] == '_'))
+        (ctx->i)++;
+    var = ft_substr(str, start, ctx->i - start);
     val = get_env_value(var, env);
     k = 0;
     while (val && val[k])
-        result[j++] = val[k++];
+        result[ctx->j++] = val[k++];
     free(var);
     free(val);
-    return j;
+    return ctx->j;
 }
 
-int handle_dollars(char *str, int *i, char *result, int j, char **env)
+int handle_dollars(char *str, t_ctx *ctx, char *result, char **env)
 {
     int count, mod;
 
     count = 0;
-    while (str[*i + count] == '$')
+    while (str[ctx->i + count] == '$')
         count++;
     mod = count / 2;
     while (mod--)
-        j = double_dollars(result, j);
+        ctx->j = double_dollars(result, ctx->j);
     if (count % 2 == 1)
     {
-        *i += count;
-        if (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-            j = replace_single_variable(str, i, result, j, env);
+        ctx->i += count;
+        if (str[ctx->i] && (ft_isalnum(str[ctx->i]) || str[ctx->i] == '_'))
+            ctx->j = replace_single_variable(str, ctx, result, env);
         else
-            result[j++] = '$';
+            result[ctx->j++] = '$';
     }
     else
-        *i += count;
-    return j;
-}
-
-char *replace_in_arg(char *str, char **env)
-{
-    char    *result;
-    int     i, j;
-
-    result = malloc(4096);
-    if (!result)
-        return NULL;
-    i = 0;
-    j = 0;
-    while (str[i])
-    {
-        if (str[i] == '$')
-            j = handle_dollars(str, &i, result, j, env);
-        else
-            result[j++] = str[i++];
-    }
-    result[j] = '\0';
-    return result;
+        ctx->i += count;
+    return ctx->j;
 }
 
 char *expand(t_token *tokens, char **env)
@@ -96,4 +75,24 @@ void append_list(t_token **head, t_token *new_node)
 			temp = temp->next;
 		temp->next = new_node;
 	}
+}
+char *replace_in_arg(char *str, char **env)
+{
+    char    *result;
+   	t_ctx     ctx;
+
+    result = malloc(4096);
+    if (!result)
+        return NULL;
+    ctx.i = 0;
+    ctx.j = 0;
+    while (str[ctx.i])
+    {
+        if (str[ctx.i] == '$')
+            ctx.j = handle_dollars(str,&ctx, result, env);
+        else
+            result[ctx.j++] = str[ctx.i++];
+    }
+    result[ctx.j] = '\0';
+    return result;
 }

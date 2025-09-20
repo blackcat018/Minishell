@@ -6,31 +6,32 @@
 /*   By: moel-idr <moel-idr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:45:21 by moel-idr          #+#    #+#             */
-/*   Updated: 2025/09/17 22:11:16 by moel-idr         ###   ########.fr       */
+/*   Updated: 2025/09/20 18:54:13 by moel-idr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes.h"
 
-int replace_variable(char *str, int *i, char *result, int j, char **env)
+int replace_variable(char *str, t_ctx *ctx, char *result, char **env)
 {
 	char	*var;
 	char	*val;
 	int		start;
 	int		k;
 
-	start = ++(*i);
-	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-		(*i)++;
-	var = ft_substr(str, start, *i - start);
+	start = ++(ctx->i);
+	while (str[ctx->i] && (ft_isalnum(str[ctx->i]) || str[ctx->i] == '_'))
+		(ctx->i)++;
+	var = ft_substr(str, start, ctx->i - start);
 	val = get_env_value(var, env);
 	k = 0;
 	while (val && val[k])
-		result[j++] = val[k++];
+		result[ctx->j++] = val[k++];
 	free(var);
 	free(val);
-	return (j);
+	return (ctx->j);
 }
+
 int handle_quotes(char *str, char *result, t_ctx *ctx)
 {
     if (str[ctx->i] == '\'' && !ctx->in_double)
@@ -64,7 +65,7 @@ int handle_expansion(char *str, char *result, t_ctx *ctx, char **env)
     if (str[ctx->i] == '$' && !ctx->in_single &&
         (ft_isalnum(str[ctx->i + 1]) || str[ctx->i + 1] == '_'))
     {
-        ctx->j = replace_variable(str, &ctx->i, result, ctx->j, env);
+        ctx->j = replace_variable(str, ctx, result, env);
         return (1);
     }
     return (0);
@@ -72,44 +73,25 @@ int handle_expansion(char *str, char *result, t_ctx *ctx, char **env)
 
 char *replace_in_quotes(char *str, char **env)
 {
-    char *result;
-	int (i),(j),(in_single),(in_double);
-    i = 0;
-	j = 0;
-    in_single = 0;
-	in_double = 0;
-    
-    result = malloc(4096);
+    char *result = malloc(4096);
+	t_ctx ctx;
+
+	ctx.i = 0;
+	ctx.j = 0;
+	ctx.in_single = 0;
+	ctx.in_double = 0;
     if (!result)
         return NULL;
-    while (str[i])
+    while (str[ctx.i])
     {
-        if (str[i] == '\'' && !in_double)
-        {
-            in_single = !in_single;
-            result[j++] = str[i++];
-        }
-        else if (str[i] == '"' && !in_single)
-        {
-            in_double = !in_double;
-            result[j++] = str[i++];
-        }
-        else if (str[i] == '$' && !in_single)
-        {
-            if (str[i + 1] == '$')
-            {
-                j = double_dollars(result, j);
-                i += 2;
-            }
-            else if (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
-                j = replace_variable(str, &i, result, j, env);
-            else
-                result[j++] = str[i++];
-        }
-        else
-            result[j++] = str[i++];
+        if (handle_quotes(str, result, &ctx))
+            continue;
+
+        if (handle_expansion(str, result, &ctx, env))
+            continue;
+        result[ctx.j++] = str[ctx.i++];
     }
-    result[j] = '\0';
+    result[ctx.j] = '\0';
     return result;
 }
 
@@ -126,4 +108,5 @@ char *handle_double(t_token *token, char **env)
     
     return final_result;
 }
+
 
