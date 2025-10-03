@@ -47,6 +47,10 @@ typedef struct s_token {
     struct s_token *next;
 } t_token;
 
+typedef struct s_exit
+{
+     int exit_status;
+}t_exit;
 
 typedef struct s_ctx
 {
@@ -55,6 +59,7 @@ typedef struct s_ctx
     int in_single;
     int in_double;
 	int len;
+    t_exit exit;
 }   t_ctx;
 
 typedef struct s_cmd
@@ -65,7 +70,6 @@ typedef struct s_cmd
 	// NodeType type;
 	struct s_cmd *next;
 }t_cmd;
-
 
 void free_split(char **strs);
 int red_flag(t_token *token);

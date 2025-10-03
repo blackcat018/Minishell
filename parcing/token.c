@@ -54,8 +54,8 @@ void is_it_word(t_token **head, t_token **tail, int *i, char *input)
     quote_type = 0;
 	new = NULL;
 	get_full_quote(input,i,&in_quote,&quote_type,&len);
-    if (len == 0)
-        return; 
+    if (len == 0){
+        return; }
 	j = make_full_token(input,len,start,&new);
 	if(j == -1)
 		return;

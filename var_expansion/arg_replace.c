@@ -51,6 +51,17 @@ int handle_quotes(char *str, char *result, t_ctx *ctx)
 
 int handle_expansion(char *str, char *result, t_ctx *ctx, char **env)
 {
+    ctx->exit.exit_status = 0;//7ayed 7ta zmer mn be3d
+    if (str[ctx->i] == '$' && str[ctx->i + 1] == '?' && !ctx->in_single)
+    {
+        char *status = ft_itoa(ctx->exit.exit_status);
+        int k = 0;
+        while (status[k])
+            result[ctx->j++] = status[k++];
+        free(status);
+        ctx->i += 2; 
+        return 1;
+    }
     if (str[ctx->i] == '$' && str[ctx->i + 1] == '$' && !ctx->in_single)
     {
         ctx->j = double_dollars(result, ctx->j);

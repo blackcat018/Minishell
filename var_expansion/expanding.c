@@ -34,8 +34,8 @@ int replace_single_variable(char *str, t_ctx *ctx, char *result, char **env)
 
 int handle_dollars(char *str, t_ctx *ctx, char *result, char **env)
 {
-    int count, mod;
-
+    ctx->exit.exit_status = 0;//7ayed zmer mn be3d
+    int (count), (mod);
     count = 0;
     while (str[ctx->i + count] == '$')
         count++;
@@ -45,7 +45,16 @@ int handle_dollars(char *str, t_ctx *ctx, char *result, char **env)
     if (count % 2 == 1)
     {
         ctx->i += count;
-        if (str[ctx->i] && (ft_isalnum(str[ctx->i]) || str[ctx->i] == '_'))
+        if (str[ctx->i] == '?' && count % 2 == 1)
+        {
+            char *status = ft_itoa(ctx->exit.exit_status);  // t_shell instance
+            int k = 0;
+            while (status[k])
+                result[ctx->j++] = status[k++];
+            free(status);
+            ctx->i++;
+        }
+        else if (str[ctx->i] && (ft_isalnum(str[ctx->i]) || str[ctx->i] == '_'))
             ctx->j = replace_single_variable(str, ctx, result, env);
         else
             result[ctx->j++] = '$';
@@ -53,15 +62,6 @@ int handle_dollars(char *str, t_ctx *ctx, char *result, char **env)
     else
         ctx->i += count;
     return ctx->j;
-}
-
-char *expand(t_token *tokens, char **env)
-{
-	char *var_val;
-
-	var_val = NULL;
-	var_val = replace_in_arg(tokens->value,env);
-	return(var_val);
 }
 
 void append_list(t_token **head, t_token *new_node)
@@ -76,6 +76,7 @@ void append_list(t_token **head, t_token *new_node)
 		temp->next = new_node;
 	}
 }
+
 char *replace_in_arg(char *str, char **env)
 {
     char    *result;
@@ -95,4 +96,13 @@ char *replace_in_arg(char *str, char **env)
     }
     result[ctx.j] = '\0';
     return result;
+}
+
+char *expand(t_token *tokens, char **env)
+{
+	char *var_val;
+
+	var_val = NULL;
+	var_val = replace_in_arg(tokens->value,env);
+	return(var_val);
 }
