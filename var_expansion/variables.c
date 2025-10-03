@@ -29,6 +29,7 @@ t_token *expand_token(t_token *token, char **envp)
         new = create_token(VAR, res, name);
 
     free(res);
+    free(name);
     return new;
 }
 
