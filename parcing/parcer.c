@@ -53,6 +53,10 @@ t_cmd	*populate_cmd_data(t_cmd *cmd, t_token *token)
 			token = token->next;
 			if (redir_check(token))
 			{
+				free(cmd->redirect[j]);   // ✅ free the strdup’d redirect
+				cmd->redirect[j] = NULL;
+				while (i > 0)
+    				free(cmd->argv[--i]);
 				return (NULL);
 			}
 			cmd->file[j] = ft_strdup(token->value);

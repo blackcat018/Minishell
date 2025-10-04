@@ -39,14 +39,14 @@ int redir_check(t_token *token)
     if ((token->type == VAR || token->type == QUOTED_VAR) &&
         is_empty_string(token))
     {
-        printf("bash: $%s: ambiguous redirect\n",token->var_nam);
+        printf("bash: : ambiguous redirect\n");
         return(1);
     }
         if ((token->type == VAR || token->type == QUOTED_VAR) &&
         (ft_isspace(token->value) || (token->var_nam != NULL && token->next 
             &&token->var_nam == token->next->var_nam)))
     {
-        printf("bash: $%s: ambiguous redirect\n",token->var_nam);
+        printf("bash: : ambiguous redirect\n");
         return(1);
     }
 	return(0);
