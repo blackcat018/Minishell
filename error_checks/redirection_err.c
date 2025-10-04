@@ -13,17 +13,16 @@
 #include "../includes.h"
 int ft_isspace(char *str)
 {
-    int i;
-
-    i = 0;
-    while(str[i])
+    int i = 0;
+    while (str[i])
     {
-        if(str[i] == ' ' || str[i] == '\t')
-            return(1);
+        if (str[i] != ' ' && str[i] != '\t')
+            return 0;
         i++;
     }
-    return(0);
+    return 1;
 }
+
 int redir_check(t_token *token)
 {
     if (!token)

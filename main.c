@@ -109,8 +109,11 @@ char *get_input(void)
 void free_token_lists(t_token **output, t_token **expand,
                       t_token **wild, t_token **strip)
 {
-    clear_tokens(output);
-    clear_tokens(expand);
+    if(output)
+        clear_tokens(output);
+    if(expand)
+        clear_tokens(expand);
+    
     clear_tokens(wild);
     clear_tokens(strip);
 }

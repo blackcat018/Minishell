@@ -17,12 +17,7 @@ void is_it_pipe(t_token **head, t_token **tail, int *i, char *input)
     t_token *new;
 
 	new = NULL;
-    if(input[*i] == '|' && input[*i+1] == '|' )
-    {
-        new = create_token(OR, "||",NULL);
-        *i += 1;
-    } 
-    else if(input[*i] == '|')
+    if(input[*i] == '|')
         new = create_token(PIPE, "|",NULL);
     if (!new)
         return;

@@ -37,6 +37,7 @@ typedef enum {
     FILE_NAME,//tbd
 	VAR,           
 	QUOTED_VAR,
+    CONCATENATED_VAR,
 } NodeType;
 
 typedef struct s_token {
@@ -71,11 +72,14 @@ typedef struct s_cmd
 	struct s_cmd *next;
 }t_cmd;
 
+int is_space_unquoted(char *str, int index);
+
 void free_split(char **strs);
 int red_flag(t_token *token);
 void free_token_list(t_token *token);
 int token_has_quotes(t_token *token);
 t_token *handel_wild_card(t_token *xpnd);
+void clear_cmd(t_cmd **head);
 // int check_quotes(char *str);
 // void err_handle(t_token *xpnd, char **envp); tf were you thinking!
 

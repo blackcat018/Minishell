@@ -40,9 +40,7 @@ int	redir_counter(t_token *token, NodeType i)
 }
 t_cmd	*populate_cmd_data(t_cmd *cmd, t_token *token)
 {
-	int		i;
-	int		j;
-
+	int		(i),(j);
 	i = 0;
 	j = 0;
 	while (token && token->type != PIPE)
@@ -54,7 +52,9 @@ t_cmd	*populate_cmd_data(t_cmd *cmd, t_token *token)
 			cmd->redirect[j] = ft_strdup(token->value);
 			token = token->next;
 			if (redir_check(token))
+			{
 				return (NULL);
+			}
 			cmd->file[j] = ft_strdup(token->value);
 			j++;
 		}
@@ -74,7 +74,10 @@ t_cmd	*store_cmds(t_token *token)
 	redir_count = redir_counter(token, PIPE);
 	cmd = malloc(sizeof(t_cmd));
 	if (!cmd)
+	{
+		clear_tokens(&token);
 		return (NULL);
+	}
 	cmd->argv = malloc(sizeof(char *) * (arg_count(token, PIPE) + 1));
 	cmd->redirect = malloc(sizeof(char *) * (redir_count + 1));
 	cmd->file = malloc(sizeof(char *) * (redir_count + 1));
@@ -82,7 +85,13 @@ t_cmd	*store_cmds(t_token *token)
 		return (NULL);
 	cmd->next = NULL;
 	if (!populate_cmd_data(cmd, token))
+	{
+		free(cmd->file);
+		free(cmd->argv);
+		free(cmd->redirect);
+		free(cmd);
 		return (NULL);
+	}
 	return (cmd);
 }
 
@@ -100,6 +109,8 @@ t_cmd	*build_cmd_list(t_token *token)
 	while (token)
 	{
 		cmd = store_cmds(token);
+		if (!cmd)
+        	return NULL;
 		if (!head)
 			head = cmd;
 		else

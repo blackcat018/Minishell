@@ -50,7 +50,7 @@ t_token	*stripper(t_token *xpnd)
 	result = NULL;
 	while (xpnd)
 	{
-		if (!xpnd->var_nam)
+		if (xpnd->type != QUOTED_VAR)
 			res = strip_str(xpnd->value);
 		else
 			res = ft_strdup(xpnd->value);
