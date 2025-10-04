@@ -68,7 +68,6 @@ typedef struct s_cmd
 	char **argv;
 	char **redirect;
 	char **file;
-	// NodeType type;
 	struct s_cmd *next;
 }t_cmd;
 

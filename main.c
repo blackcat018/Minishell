@@ -12,6 +12,44 @@
 
 #include "includes.h"
 
+
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/wait.h>
+
+void execute_cmd(t_cmd *cmd)
+{
+    pid_t pid;
+    int status;
+
+    while (cmd)
+    {
+        pid = fork();
+        if (pid == 0)
+        {
+            if (execvp(cmd->argv[0], cmd->argv) == -1)
+            {
+                perror("execvp");
+                _exit(1);
+            }
+        }
+        else if (pid > 0)
+        {
+            waitpid(pid, &status, 0);
+        }
+        else
+        {
+            perror("fork");
+            return;
+        }
+
+        cmd = cmd->next;
+    }
+}
+
+
+
+
 void print_tokens(t_token *tokens)//just for testing
 {
     while (tokens) {
@@ -118,7 +156,7 @@ void free_token_lists(t_token **output, t_token **expand,
     clear_tokens(strip);
 }
 
-void process_line(char *input, char **env)
+t_cmd *process_line(char *input, char **env)
 {
     t_token *head   = NULL;
     t_token *tail   = NULL;
@@ -134,12 +172,10 @@ void process_line(char *input, char **env)
     strip  = stripper(wild);
     cmd    = build_cmd_list(strip);
 
-    if (cmd)
-        print_parse(cmd);
 	// print_tokens(output);
     free_token_lists(&output, &expand, &wild, &strip);
-    if (cmd)
-        clear_cmd(&cmd);
+
+    return(cmd);
 }
 int check_unclosed_quotes(const char *line)
 {
@@ -189,6 +225,7 @@ char *read_complete_line(void)
 int main(int ac, char **av, char **env)
 {
     char *input;
+    t_cmd *cmd;
 
     (void)ac;
     (void)av;
@@ -199,7 +236,9 @@ int main(int ac, char **av, char **env)
         if (!input)
             break;
 
-        process_line(input, env);
+        cmd = process_line(input, env);
+        execute_cmd(cmd);
+        clear_cmd(&cmd);
         free(input);
     }
     clear_history();
